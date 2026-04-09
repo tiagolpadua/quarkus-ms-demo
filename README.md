@@ -16,6 +16,7 @@ O projeto expõe três áreas principais:
 - SmallRye OpenAPI + Swagger UI
 - Hibernate ORM Panache
 - H2 em memória
+- OpenTelemetry (OTLP tracing)
 - MapStruct
 - JUnit + RestAssured
 - Spotless com Google Java Format
@@ -43,6 +44,35 @@ Com a aplicação em execução:
 - API: `http://localhost:8080`
 - OpenAPI: `http://localhost:8080/q/openapi`
 - Swagger UI: `http://localhost:8080/q/swagger-ui`
+- Dev UI: `http://localhost:8080/q/dev-ui`
+
+Para inspecionar o banco H2 em memória durante o desenvolvimento, use:
+
+- `http://localhost:8080/q/dev-ui`
+
+Na Dev UI, abra a seção de datasource/H2 para navegar pelas tabelas e executar consultas SQL. O projeto já está configurado com `%dev.quarkus.datasource.dev-ui.allow-sql=true` para permitir esse uso em ambiente de desenvolvimento.
+
+## Observabilidade
+
+O projeto possui suporte nativo a OpenTelemetry via extensão oficial do Quarkus, com tracing OTLP e correlação de `traceId` e `spanId` nos logs.
+
+Configurações principais:
+
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: endpoint OTLP do collector. Padrão: `http://localhost:4317`
+- `OTEL_EXPORTER_OTLP_PROTOCOL`: protocolo OTLP. Padrão: `grpc`
+- `OTEL_EXPORTER_OTLP_HEADERS`: headers extras para autenticação com o collector
+- `OTEL_TRACES_SAMPLER`: sampler OTel. Padrão: `parentbased_traceidratio`
+- `OTEL_TRACES_SAMPLER_ARG`: taxa de amostragem quando aplicável. Padrão: `1.0`
+- `DEPLOYMENT_ENVIRONMENT`: atributo `deployment.environment` enviado nos recursos OTel. Padrão: `dev`
+- `OTEL_EXPORTER_OTLP_ENABLED`: em `dev`, controla se a exportação OTLP fica ativa. Padrão: `false`
+
+Boas práticas adotadas:
+
+- sem uso de Java agent, aproveitando a instrumentação nativa do Quarkus
+- tracing habilitado com export OTLP configurável por ambiente
+- logs com correlação de trace para facilitar troubleshooting
+- SDK OTel desabilitado em testes para manter a suíte estável e silenciosa
+- métricas e logs OTEL não foram habilitados por padrão porque, na documentação oficial do Quarkus atual, esses sinais ainda são tratados separadamente e métricas seguem fluxo recomendado via Micrometer bridge quando necessário
 
 ## Scripts úteis
 
