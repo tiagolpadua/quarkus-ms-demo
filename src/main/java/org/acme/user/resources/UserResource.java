@@ -1,10 +1,13 @@
 package org.acme.user.resources;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -13,8 +16,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.acme.user.dtos.UserRequest;
@@ -29,9 +34,15 @@ public class UserResource {
 
   private final UserService service;
 
+  @Context UriInfo uriInfo;
+
   @GET
-  public List<UserResponse> list() {
-    return service.list();
+  public List<UserResponse> list(
+      @QueryParam("page") @DefaultValue("0") @Min(0) int page,
+      @QueryParam("size") @DefaultValue("20") @Min(1) @Max(100) int size,
+      @QueryParam("sort") @DefaultValue("username") String sortBy,
+      @QueryParam("direction") @DefaultValue("asc") String direction) {
+    return service.list(page, size, sortBy, direction);
   }
 
   @GET
@@ -56,20 +67,23 @@ public class UserResource {
   }
 
   @POST
-  public UserResponse create(@Valid UserRequest user) {
-    return service.create(user);
+  public Response create(@Valid UserRequest user) {
+    UserResponse response = service.create(user);
+    return Response.created(uriInfo.getAbsolutePathBuilder().path(response.username()).build())
+        .entity(response)
+        .build();
   }
 
   @POST
   @Path("/createWithArray")
-  public List<UserResponse> createWithArray(@NotEmpty List<@Valid UserRequest> users) {
-    return service.createMany(users);
+  public Response createWithArray(@NotEmpty List<@Valid UserRequest> users) {
+    return Response.status(Response.Status.CREATED).entity(service.createMany(users)).build();
   }
 
   @POST
   @Path("/createWithList")
-  public List<UserResponse> createWithList(@NotEmpty List<@Valid UserRequest> users) {
-    return service.createMany(users);
+  public Response createWithList(@NotEmpty List<@Valid UserRequest> users) {
+    return Response.status(Response.Status.CREATED).entity(service.createMany(users)).build();
   }
 
   @GET

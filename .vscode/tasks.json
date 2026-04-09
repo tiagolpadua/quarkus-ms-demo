@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Dev",
+      "type": "shell",
+      "command": "./run.sh",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Check",
+      "type": "shell",
+      "command": "./run-check.sh",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Spotless Apply",
+      "type": "shell",
+      "command": "./run-spotless-apply.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Prod",
+      "type": "shell",
+      "command": "./run-build-prod.sh",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Docker",
+      "type": "shell",
+      "command": "./run-docker.sh",
+      "problemMatcher": []
+    }
+  ]
+}

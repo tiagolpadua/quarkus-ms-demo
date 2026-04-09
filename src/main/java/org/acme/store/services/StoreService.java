@@ -1,6 +1,7 @@
 package org.acme.store.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class StoreService {
     return inventory;
   }
 
+  @Transactional
   public Order placeOrder(Order order) {
     return orderRepository.save(order);
   }
@@ -33,6 +35,7 @@ public class StoreService {
     return orderRepository.findOptionalById(orderId);
   }
 
+  @Transactional
   public boolean deleteOrder(Long orderId) {
     return orderRepository.delete(orderId);
   }

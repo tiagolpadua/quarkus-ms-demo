@@ -36,7 +36,7 @@ public class StoreResourceTest {
             .when()
             .post("/store/order")
             .then()
-            .statusCode(200)
+            .statusCode(201)
             .body("id", is(2), "status", is("approved"), "complete", is(true))
             .extract()
             .path("id");

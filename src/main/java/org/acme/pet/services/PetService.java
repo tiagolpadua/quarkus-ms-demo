@@ -26,12 +26,15 @@ public class PetService {
     return repository.save(normalize(pet));
   }
 
-  public List<Pet> findByStatus(List<String> statuses) {
-    return repository.findByStatus(statuses);
+  public List<Pet> findByStatus(
+      List<String> statuses, Integer page, Integer size, String sortBy, String direction) {
+    return repository.findByStatus(
+        statuses, normalizePage(page), normalizeSize(size), sortBy, direction);
   }
 
-  public List<Pet> findByTags(List<String> tags) {
-    return repository.findByTags(tags);
+  public List<Pet> findByTags(
+      List<String> tags, Integer page, Integer size, String sortBy, String direction) {
+    return repository.findByTags(tags, normalizePage(page), normalizeSize(size), sortBy, direction);
   }
 
   public Optional<Pet> getById(Long petId) {
@@ -79,5 +82,13 @@ public class PetService {
       details.add("file=" + fileName);
     }
     return details.isEmpty() ? "" : " (" + String.join(", ", details) + ")";
+  }
+
+  private int normalizePage(Integer page) {
+    return page == null ? 0 : Math.max(page, 0);
+  }
+
+  private int normalizeSize(Integer size) {
+    return size == null ? 20 : Math.max(1, Math.min(size, 100));
   }
 }

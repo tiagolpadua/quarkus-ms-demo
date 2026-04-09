@@ -2,15 +2,15 @@ package org.acme.pet.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.acme.pet.dtos.Category;
 import org.acme.pet.dtos.CategoryRequest;
 import org.acme.pet.dtos.CategoryResponse;
 import org.acme.pet.dtos.PetRequest;
 import org.acme.pet.dtos.PetResponse;
-import org.acme.pet.dtos.Tag;
 import org.acme.pet.dtos.TagRequest;
 import org.acme.pet.dtos.TagResponse;
+import org.acme.pet.persistence.Category;
 import org.acme.pet.persistence.Pet;
+import org.acme.pet.persistence.Tag;
 
 public final class PetMapper {
 
@@ -56,10 +56,10 @@ public final class PetMapper {
   }
 
   private static CategoryResponse toCategoryResponse(Category source) {
-    return source == null ? null : new CategoryResponse(source.getId(), source.getName());
+    return source == null ? null : new CategoryResponse(source.id(), source.name());
   }
 
   private static TagResponse toTagResponse(Tag source) {
-    return new TagResponse(source.getId(), source.getName());
+    return new TagResponse(source.id(), source.name());
   }
 }

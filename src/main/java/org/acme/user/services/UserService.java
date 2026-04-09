@@ -49,8 +49,8 @@ public class UserService {
     return repository.deleteByUsername(username);
   }
 
-  public List<UserResponse> list() {
-    return UserMapper.toResponseList(repository.listAll());
+  public List<UserResponse> list(int page, int size, String sortBy, String direction) {
+    return UserMapper.toResponseList(repository.listPaged(page, size, sortBy, direction));
   }
 
   public List<UserResponse> listByStatusNamedQuery(Integer userStatus) {

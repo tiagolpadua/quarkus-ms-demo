@@ -14,8 +14,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.acme.pet.dtos.PetRequest;
@@ -31,10 +33,16 @@ public class PetResource {
 
   private final PetService service;
 
+  @Context UriInfo uriInfo;
+
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public PetResponse add(@Valid PetRequest pet) {
-    return PetMapper.toResponse(service.add(PetMapper.toEntity(pet)));
+  public Response add(@Valid PetRequest pet) {
+    PetResponse response = PetMapper.toResponse(service.add(PetMapper.toEntity(pet)));
+    return Response.created(
+            uriInfo.getAbsolutePathBuilder().path(String.valueOf(response.id())).build())
+        .entity(response)
+        .build();
   }
 
   @PUT
@@ -45,14 +53,24 @@ public class PetResource {
 
   @GET
   @Path("/findByStatus")
-  public List<PetResponse> findByStatus(@QueryParam("status") List<String> statuses) {
-    return PetMapper.toResponseList(service.findByStatus(statuses));
+  public List<PetResponse> findByStatus(
+      @QueryParam("status") List<String> statuses,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size,
+      @QueryParam("sort") String sortBy,
+      @QueryParam("direction") String direction) {
+    return PetMapper.toResponseList(service.findByStatus(statuses, page, size, sortBy, direction));
   }
 
   @GET
   @Path("/findByTags")
-  public List<PetResponse> findByTags(@QueryParam("tags") List<String> tags) {
-    return PetMapper.toResponseList(service.findByTags(tags));
+  public List<PetResponse> findByTags(
+      @QueryParam("tags") List<String> tags,
+      @QueryParam("page") Integer page,
+      @QueryParam("size") Integer size,
+      @QueryParam("sort") String sortBy,
+      @QueryParam("direction") String direction) {
+    return PetMapper.toResponseList(service.findByTags(tags, page, size, sortBy, direction));
   }
 
   @GET

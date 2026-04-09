@@ -10,8 +10,10 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.acme.store.dtos.OrderRequest;
@@ -27,6 +29,8 @@ public class StoreResource {
 
   private final StoreService service;
 
+  @Context UriInfo uriInfo;
+
   @GET
   @Path("/inventory")
   public Map<String, Integer> getInventory() {
@@ -35,8 +39,17 @@ public class StoreResource {
 
   @POST
   @Path("/order")
-  public OrderResponse placeOrder(@Valid OrderRequest order) {
-    return OrderMapper.toResponse(service.placeOrder(OrderMapper.toEntity(order)));
+  public Response placeOrder(@Valid OrderRequest order) {
+    OrderResponse response =
+        OrderMapper.toResponse(service.placeOrder(OrderMapper.toEntity(order)));
+    return Response.created(
+            uriInfo
+                .getBaseUriBuilder()
+                .path("store/order")
+                .path(String.valueOf(response.id()))
+                .build())
+        .entity(response)
+        .build();
   }
 
   @GET

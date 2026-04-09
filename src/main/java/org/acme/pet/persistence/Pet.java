@@ -19,8 +19,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.acme.pet.dtos.Category;
-import org.acme.pet.dtos.Tag;
 
 @Entity
 @Table(name = "pet")

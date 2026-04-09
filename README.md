@@ -2,6 +2,11 @@
 
 API REST em Quarkus inspirada no contrato do Swagger Petstore, organizada em camadas simples para facilitar estudo, evolução e testes.
 
+## Escopo didático
+
+- Este projeto é didático e não entra no mérito de segurança de produção (autenticação, autorização e hardening).
+- O projeto é agnóstico em relação a banco; o H2 em memória é apenas a configuração padrão para execução local e testes rápidos.
+
 O projeto expõe três áreas principais:
 
 - `pet`: cadastro e consulta de pets persistidos em H2
@@ -21,7 +26,6 @@ O projeto expõe três áreas principais:
 - Quarkus Info
 - OpenTelemetry (OTLP tracing)
 - RESTEasy Problem (RFC 7807)
-- MapStruct
 - JUnit + RestAssured
 - Spotless com Google Java Format
 
@@ -102,6 +106,34 @@ Como usar:
 - `./run.sh`: inicia a aplicação em modo dev
 - `./run-check.sh`: roda testes e valida formatação
 - `./run-spotless-apply.sh`: corrige formatação Java automaticamente
+- `./run-build-prod.sh`: gera o build de produção com `clean verify`
+- `./run-docker.sh`: gera a imagem Docker JVM e sobe a aplicação em container
+
+Equivalentes para Windows:
+
+- `run.cmd`
+- `run-check.cmd`
+- `run-spotless-apply.cmd`
+- `run-build-prod.cmd`
+- `run-docker.cmd`
+
+Build de produção:
+
+```sh
+./run-build-prod.sh
+```
+
+Execução em Docker:
+
+```sh
+./run-docker.sh
+```
+
+Variáveis opcionais para o script Docker:
+
+- `IMAGE_NAME`: nome da imagem. Padrão: `quarkus-ms-demo:jvm`
+- `CONTAINER_NAME`: nome do container. Padrão: `quarkus-ms-demo`
+- `HOST_PORT`: porta publicada no host. Padrão: `8080`
 
 ## Endpoints principais
 

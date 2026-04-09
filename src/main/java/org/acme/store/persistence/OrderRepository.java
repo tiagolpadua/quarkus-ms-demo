@@ -2,13 +2,11 @@ package org.acme.store.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import java.util.Optional;
 
 @ApplicationScoped
 public class OrderRepository implements PanacheRepository<Order> {
 
-  @Transactional
   public Order save(Order order) {
     if (order.getId() == null) {
       persist(order);
@@ -22,7 +20,6 @@ public class OrderRepository implements PanacheRepository<Order> {
     return findByIdOptional(id);
   }
 
-  @Transactional
   public boolean delete(Long id) {
     return deleteById(id);
   }

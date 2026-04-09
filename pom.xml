@@ -8,7 +8,6 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>quarkus</packaging>
   <properties>
-    <mapstruct.version>1.6.3</mapstruct.version>
     <quarkus.resteasy.problem.version>3.32.1</quarkus.resteasy.problem.version>
     <spotless.version>2.44.4</spotless.version>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -81,11 +80,6 @@
       <version>${quarkus.resteasy.problem.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
-      <version>${mapstruct.version}</version>
-    </dependency>
-    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit</artifactId>
       <scope>test</scope>
@@ -111,19 +105,9 @@
         <configuration>
           <annotationProcessorPaths>
             <path>
-              <groupId>org.mapstruct</groupId>
-              <artifactId>mapstruct-processor</artifactId>
-              <version>${mapstruct.version}</version>
-            </path>
-            <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
               <version>1.18.36</version>
-            </path>
-            <path>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok-mapstruct-binding</artifactId>
-              <version>0.2.0</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

@@ -31,7 +31,7 @@ public class PetResourceTest {
             .when()
             .post("/pet")
             .then()
-            .statusCode(200)
+            .statusCode(201)
             .body("id", notNullValue(), "name", is("doggie-plus"), "status", is("available"))
             .extract()
             .path("id");

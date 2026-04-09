@@ -1,14 +1,20 @@
 package org.acme.user.persistence;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {
+
+  private static final Set<String> ALLOWED_SORT_FIELDS =
+      Set.of("id", "username", "firstName", "lastName", "email", "userStatus");
 
   public Optional<User> findByUsername(String username) {
     return find("username", username).firstResultOptional();
@@ -16,6 +22,12 @@ public class UserRepository implements PanacheRepository<User> {
 
   public boolean deleteByUsername(String username) {
     return delete("username", username) > 0;
+  }
+
+  public List<User> listPaged(int page, int size, String sortBy, String direction) {
+    String field = sanitizeSortField(sortBy);
+    Sort sort = isDescending(direction) ? Sort.descending(field) : Sort.ascending(field);
+    return findAll(sort).page(Page.of(page, size)).list();
   }
 
   public List<User> findByStatusNamedQuery(Integer userStatus) {
@@ -56,5 +68,16 @@ public class UserRepository implements PanacheRepository<User> {
         .where(predicates.toArray(Predicate[]::new))
         .orderBy(builder.asc(root.get("username")));
     return getEntityManager().createQuery(query).getResultList();
+  }
+
+  private String sanitizeSortField(String sortBy) {
+    if (sortBy == null || !ALLOWED_SORT_FIELDS.contains(sortBy)) {
+      return "username";
+    }
+    return sortBy;
+  }
+
+  private boolean isDescending(String direction) {
+    return direction != null && "desc".equalsIgnoreCase(direction);
   }
 }

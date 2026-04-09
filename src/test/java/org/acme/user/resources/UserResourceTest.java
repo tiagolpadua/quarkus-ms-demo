@@ -32,7 +32,7 @@ public class UserResourceTest {
         .when()
         .post("/user")
         .then()
-        .statusCode(200);
+        .statusCode(201);
 
     given()
         .when()
@@ -105,7 +105,7 @@ public class UserResourceTest {
         .when()
         .post("/user/createWithArray")
         .then()
-        .statusCode(200);
+        .statusCode(201);
 
     given()
         .contentType(ContentType.JSON)
@@ -125,7 +125,7 @@ public class UserResourceTest {
         .when()
         .post("/user/createWithList")
         .then()
-        .statusCode(200);
+        .statusCode(201);
 
     given().when().delete("/user/user1").then().statusCode(204);
 
@@ -157,5 +157,19 @@ public class UserResourceTest {
         .then()
         .statusCode(400)
         .contentType(containsString("application/problem+json"));
+  }
+
+  @Test
+  public void testUserListPaginationAndOrdering() {
+    given()
+        .queryParam("page", 0)
+        .queryParam("size", 1)
+        .queryParam("sort", "username")
+        .queryParam("direction", "desc")
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(200)
+        .body("$.size()", is(1));
   }
 }
