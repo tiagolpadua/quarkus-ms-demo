@@ -24,6 +24,7 @@ import org.acme.pet.resources.dtos.PetRequest;
 import org.acme.pet.resources.dtos.PetResponse;
 import org.acme.pet.services.PetService;
 import org.acme.shared.ApiResponse;
+import org.acme.shared.ListResponse;
 
 @Path("/pet")
 @Produces(MediaType.APPLICATION_JSON)
@@ -52,24 +53,24 @@ public class PetResource {
 
   @GET
   @Path("/findByStatus")
-  public List<PetResponse> findByStatus(
+  public ListResponse<PetResponse> findByStatus(
       @QueryParam("status") List<String> statuses,
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size,
       @QueryParam("sort") String sortBy,
       @QueryParam("direction") String direction) {
-    return service.findByStatus(statuses, page, size, sortBy, direction);
+    return new ListResponse<>(service.findByStatus(statuses, page, size, sortBy, direction));
   }
 
   @GET
   @Path("/findByTags")
-  public List<PetResponse> findByTags(
+  public ListResponse<PetResponse> findByTags(
       @QueryParam("tags") List<String> tags,
       @QueryParam("page") Integer page,
       @QueryParam("size") Integer size,
       @QueryParam("sort") String sortBy,
       @QueryParam("direction") String direction) {
-    return service.findByTags(tags, page, size, sortBy, direction);
+    return new ListResponse<>(service.findByTags(tags, page, size, sortBy, direction));
   }
 
   @GET

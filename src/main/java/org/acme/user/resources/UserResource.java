@@ -23,6 +23,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.acme.shared.ListResponse;
 import org.acme.shared.pagination.PagedResponse;
 import org.acme.user.resources.dtos.UserRequest;
 import org.acme.user.resources.dtos.UserResponse;
@@ -39,12 +40,12 @@ public class UserResource {
   @Context UriInfo uriInfo;
 
   @GET
-  public List<UserResponse> list(
+  public ListResponse<UserResponse> list(
       @QueryParam("page") @DefaultValue("0") @Min(0) int page,
       @QueryParam("size") @DefaultValue("20") @Min(1) @Max(100) int size,
       @QueryParam("sort") @DefaultValue("username") String sortBy,
       @QueryParam("direction") @DefaultValue("asc") String direction) {
-    return service.list(page, size, sortBy, direction);
+    return new ListResponse<>(service.list(page, size, sortBy, direction));
   }
 
   @GET
@@ -63,23 +64,24 @@ public class UserResource {
 
   @GET
   @Path("/examples/named-query")
-  public List<UserResponse> listByNamedQuery(@QueryParam("status") Integer userStatus) {
-    return service.listByStatusNamedQuery(userStatus);
+  public ListResponse<UserResponse> listByNamedQuery(@QueryParam("status") Integer userStatus) {
+    return new ListResponse<>(service.listByStatusNamedQuery(userStatus));
   }
 
   @GET
   @Path("/examples/named-native-query")
-  public List<UserResponse> listByNamedNativeQuery(@QueryParam("emailDomain") String emailDomain) {
-    return service.listByEmailDomainNativeQuery(emailDomain);
+  public ListResponse<UserResponse> listByNamedNativeQuery(
+      @QueryParam("emailDomain") String emailDomain) {
+    return new ListResponse<>(service.listByEmailDomainNativeQuery(emailDomain));
   }
 
   @GET
   @Path("/examples/criteria")
-  public List<UserResponse> listByCriteria(
+  public ListResponse<UserResponse> listByCriteria(
       @QueryParam("usernamePrefix") String usernamePrefix,
       @QueryParam("status") Integer userStatus,
       @QueryParam("emailDomain") String emailDomain) {
-    return service.listByCriteria(usernamePrefix, userStatus, emailDomain);
+    return new ListResponse<>(service.listByCriteria(usernamePrefix, userStatus, emailDomain));
   }
 
   @POST
@@ -93,13 +95,17 @@ public class UserResource {
   @POST
   @Path("/createWithArray")
   public Response createWithArray(@NotEmpty List<@Valid UserRequest> users) {
-    return Response.status(Response.Status.CREATED).entity(service.createMany(users)).build();
+    return Response.status(Response.Status.CREATED)
+        .entity(new ListResponse<>(service.createMany(users)))
+        .build();
   }
 
   @POST
   @Path("/createWithList")
   public Response createWithList(@NotEmpty List<@Valid UserRequest> users) {
-    return Response.status(Response.Status.CREATED).entity(service.createMany(users)).build();
+    return Response.status(Response.Status.CREATED)
+        .entity(new ListResponse<>(service.createMany(users)))
+        .build();
   }
 
   @GET

@@ -16,7 +16,12 @@ class UserResourceTest {
 
   @Test
   void testUserOperations() {
-    given().when().get("/user").then().statusCode(200).body("$.size()", greaterThanOrEqualTo(2));
+    given()
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(200)
+        .body("items.size()", greaterThanOrEqualTo(2));
 
     given()
         .contentType(ContentType.JSON)
@@ -49,7 +54,9 @@ class UserResourceTest {
         .get("/user/examples/named-query")
         .then()
         .statusCode(200)
-        .body("username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2", "user1"));
+        .body(
+            "items.username",
+            org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2", "user1"));
 
     given()
         .queryParam("emailDomain", "example.com")
@@ -57,7 +64,9 @@ class UserResourceTest {
         .get("/user/examples/named-native-query")
         .then()
         .statusCode(200)
-        .body("username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2", "user1"));
+        .body(
+            "items.username",
+            org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2", "user1"));
 
     given()
         .queryParam("usernamePrefix", "seed-user")
@@ -67,8 +76,8 @@ class UserResourceTest {
         .get("/user/examples/criteria")
         .then()
         .statusCode(200)
-        .body("$.size()", is(2))
-        .body("username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2"));
+        .body("items.size()", is(2))
+        .body("items.username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2"));
 
     given()
         .contentType(ContentType.JSON)
@@ -172,7 +181,7 @@ class UserResourceTest {
         .get("/user")
         .then()
         .statusCode(200)
-        .body("$.size()", is(1));
+        .body("items.size()", is(1));
   }
 
   @Test

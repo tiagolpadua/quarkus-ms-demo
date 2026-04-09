@@ -50,7 +50,7 @@ class PetResourceTest {
         .get("/pet/findByStatus")
         .then()
         .statusCode(200)
-        .body("name", containsInAnyOrder("doggie", "doggie-plus"));
+        .body("items.name", containsInAnyOrder("doggie", "doggie-plus"));
 
     given()
         .queryParam("tags", "friendly")
@@ -58,7 +58,7 @@ class PetResourceTest {
         .get("/pet/findByTags")
         .then()
         .statusCode(200)
-        .body("name", containsInAnyOrder("doggie", "doggie-plus"));
+        .body("items.name", containsInAnyOrder("doggie", "doggie-plus"));
 
     given()
         .contentType(ContentType.JSON)
