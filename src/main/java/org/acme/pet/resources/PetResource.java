@@ -5,6 +5,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -54,11 +55,11 @@ public class PetResource {
 
   @GET
   @Path("/{petId}")
-  public Response getById(@PathParam("petId") Long petId) {
+  public PetResponse getById(@PathParam("petId") Long petId) {
     return service
         .getById(petId)
-        .map(pet -> Response.ok(PetMapper.toResponse(pet)).build())
-        .orElse(Response.status(Response.Status.NOT_FOUND).build());
+        .map(PetMapper::toResponse)
+        .orElseThrow(() -> new NotFoundException("Pet not found: " + petId));
   }
 
   @POST
@@ -68,18 +69,21 @@ public class PetResource {
       @PathParam("petId") Long petId,
       @FormParam("name") String name,
       @FormParam("status") String status) {
-    return service
-        .updateWithForm(petId, name, status)
-        .map(pet -> Response.ok(PetMapper.toResponse(pet)).build())
-        .orElse(Response.status(Response.Status.NOT_FOUND).build());
+    PetResponse response =
+        service
+            .updateWithForm(petId, name, status)
+            .map(PetMapper::toResponse)
+            .orElseThrow(() -> new NotFoundException("Pet not found: " + petId));
+    return Response.ok(response).build();
   }
 
   @DELETE
   @Path("/{petId}")
   public Response delete(@HeaderParam("api_key") String apiKey, @PathParam("petId") Long petId) {
-    return service.delete(petId)
-        ? Response.noContent().build()
-        : Response.status(Response.Status.NOT_FOUND).build();
+    if (!service.delete(petId)) {
+      throw new NotFoundException("Pet not found: " + petId);
+    }
+    return Response.noContent().build();
   }
 
   @POST

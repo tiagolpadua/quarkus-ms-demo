@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -101,6 +102,11 @@ public class PetResourceTest {
 
     given().header("api_key", "special-key").when().delete("/pet/" + petId).then().statusCode(204);
 
-    given().when().get("/pet/" + petId).then().statusCode(404);
+    given()
+        .when()
+        .get("/pet/" + petId)
+        .then()
+        .statusCode(404)
+        .contentType(containsString("application/problem+json"));
   }
 }

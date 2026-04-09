@@ -3,6 +3,7 @@ package org.acme.user;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -47,27 +48,28 @@ public class UserResource {
 
   @GET
   @Path("/{username}")
-  public Response getByUsername(@PathParam("username") String username) {
+  public UserResponse getByUsername(@PathParam("username") String username) {
     return service
         .getByUsername(username)
-        .map(user -> Response.ok(user).build())
-        .orElse(Response.status(Response.Status.NOT_FOUND).build());
+        .orElseThrow(() -> new NotFoundException("User not found: " + username));
   }
 
   @PUT
   @Path("/{username}")
   public Response update(@PathParam("username") String username, UserRequest user) {
-    return service
-        .update(username, user)
-        .map(updatedUser -> Response.ok(updatedUser).build())
-        .orElse(Response.status(Response.Status.NOT_FOUND).build());
+    UserResponse response =
+        service
+            .update(username, user)
+            .orElseThrow(() -> new NotFoundException("User not found: " + username));
+    return Response.ok(response).build();
   }
 
   @DELETE
   @Path("/{username}")
   public Response delete(@PathParam("username") String username) {
-    return service.delete(username)
-        ? Response.noContent().build()
-        : Response.status(Response.Status.NOT_FOUND).build();
+    if (!service.delete(username)) {
+      throw new NotFoundException("User not found: " + username);
+    }
+    return Response.noContent().build();
   }
 }

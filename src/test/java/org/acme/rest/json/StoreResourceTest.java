@@ -2,6 +2,7 @@ package org.acme.rest.json;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -50,6 +51,11 @@ public class StoreResourceTest {
 
     given().when().delete("/store/order/" + orderId).then().statusCode(204);
 
-    given().when().get("/store/order/" + orderId).then().statusCode(404);
+    given()
+        .when()
+        .get("/store/order/" + orderId)
+        .then()
+        .statusCode(404)
+        .contentType(containsString("application/problem+json"));
   }
 }

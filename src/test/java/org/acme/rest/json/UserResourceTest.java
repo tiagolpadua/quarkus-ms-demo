@@ -2,6 +2,7 @@ package org.acme.rest.json;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -101,6 +102,11 @@ public class UserResourceTest {
 
     given().when().delete("/user/user1").then().statusCode(204);
 
-    given().when().get("/user/user1").then().statusCode(404);
+    given()
+        .when()
+        .get("/user/user1")
+        .then()
+        .statusCode(404)
+        .contentType(containsString("application/problem+json"));
   }
 }

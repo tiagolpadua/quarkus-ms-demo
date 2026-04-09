@@ -17,6 +17,7 @@ O projeto expõe três áreas principais:
 - Hibernate ORM Panache
 - H2 em memória
 - OpenTelemetry (OTLP tracing)
+- RESTEasy Problem (RFC 7807)
 - MapStruct
 - JUnit + RestAssured
 - Spotless com Google Java Format
@@ -163,5 +164,6 @@ Os testes cobrem:
 ## Observações
 
 - A documentação OpenAPI publicada pela aplicação usa o título `Swagger Petstore`.
+- Erros HTTP produzidos pelos resources seguem o formato `application/problem+json` via extensão `quarkus-resteasy-problem`.
 - Há arquivos estáticos legados em `src/main/resources/META-INF/resources`, mas o foco atual do projeto está na API REST.
 - O projeto recomenda a extensão VS Code `redhat.vscode-quarkus` em `.vscode/extensions.json`.
