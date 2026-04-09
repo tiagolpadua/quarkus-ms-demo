@@ -1,4 +1,4 @@
-package org.acme.pet.dtos;
+package org.acme.pet.resources.dtos;
 
 import java.util.List;
 

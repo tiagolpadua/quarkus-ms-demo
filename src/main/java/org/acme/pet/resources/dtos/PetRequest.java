@@ -1,4 +1,4 @@
-package org.acme.pet.dtos;
+package org.acme.pet.resources.dtos;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

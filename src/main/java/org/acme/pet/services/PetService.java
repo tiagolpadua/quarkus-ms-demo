@@ -9,6 +9,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.acme.pet.persistence.Pet;
 import org.acme.pet.persistence.PetRepository;
+import org.acme.pet.resources.dtos.PetRequest;
+import org.acme.pet.resources.dtos.PetResponse;
+import org.acme.pet.services.mappers.PetMapper;
 import org.acme.shared.ApiResponse;
 
 @ApplicationScoped
@@ -17,37 +20,40 @@ public class PetService {
 
   private final PetRepository repository;
   private final MeterRegistry meterRegistry;
+  private final PetMapper mapper;
 
   @Transactional
-  public Pet add(Pet pet) {
-    Pet createdPet = repository.save(normalize(pet));
+  public PetResponse add(PetRequest petRequest) {
+    Pet createdPet = repository.save(normalize(mapper.toEntity(petRequest)));
     meterRegistry.counter("pet_create_total").increment();
-    return createdPet;
+    return mapper.toResponse(createdPet);
   }
 
   @Transactional
-  public Pet update(Pet pet) {
-    return repository.save(normalize(pet));
+  public PetResponse update(PetRequest petRequest) {
+    return mapper.toResponse(repository.save(normalize(mapper.toEntity(petRequest))));
   }
 
-  public List<Pet> findByStatus(
+  public List<PetResponse> findByStatus(
       List<String> statuses, Integer page, Integer size, String sortBy, String direction) {
-    return repository.findByStatus(
-        statuses, normalizePage(page), normalizeSize(size), sortBy, direction);
+    return mapper.toResponseList(
+        repository.findByStatus(
+            statuses, normalizePage(page), normalizeSize(size), sortBy, direction));
   }
 
-  public List<Pet> findByTags(
+  public List<PetResponse> findByTags(
       List<String> tags, Integer page, Integer size, String sortBy, String direction) {
-    return repository.findByTags(tags, normalizePage(page), normalizeSize(size), sortBy, direction);
+    return mapper.toResponseList(
+        repository.findByTags(tags, normalizePage(page), normalizeSize(size), sortBy, direction));
   }
 
-  public Optional<Pet> getById(Long petId) {
-    return repository.findOptionalById(petId);
+  public Optional<PetResponse> getById(Long petId) {
+    return repository.findOptionalById(petId).map(mapper::toResponse);
   }
 
   @Transactional
-  public Optional<Pet> updateWithForm(Long petId, String name, String status) {
-    return repository.updatePartial(petId, name, status);
+  public Optional<PetResponse> updateWithForm(Long petId, String name, String status) {
+    return repository.updatePartial(petId, name, status).map(mapper::toResponse);
   }
 
   @Transactional

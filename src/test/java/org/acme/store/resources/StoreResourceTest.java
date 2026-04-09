@@ -21,7 +21,7 @@ class StoreResourceTest {
         .get("/store/inventory")
         .then()
         .statusCode(200)
-        .body("available", is(1), "pending", is(1));
+        .body("inventory.available", is(1), "inventory.pending", is(1));
 
     Number orderIdValue =
         given()

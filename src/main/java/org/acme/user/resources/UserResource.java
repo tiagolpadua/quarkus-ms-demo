@@ -22,8 +22,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.acme.user.dtos.UserRequest;
-import org.acme.user.dtos.UserResponse;
+import org.acme.user.resources.dtos.UserRequest;
+import org.acme.user.resources.dtos.UserResponse;
 import org.acme.user.services.UserService;
 
 @Path("/user")

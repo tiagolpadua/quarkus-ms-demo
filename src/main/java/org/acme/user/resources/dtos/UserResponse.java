@@ -1,4 +1,4 @@
-package org.acme.user.dtos;
+package org.acme.user.resources.dtos;
 
 public record UserResponse(
     Long id,

@@ -20,9 +20,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.acme.pet.dtos.PetRequest;
-import org.acme.pet.dtos.PetResponse;
-import org.acme.pet.mappers.PetMapper;
+import org.acme.pet.resources.dtos.PetRequest;
+import org.acme.pet.resources.dtos.PetResponse;
 import org.acme.pet.services.PetService;
 import org.acme.shared.ApiResponse;
 
@@ -38,7 +37,7 @@ public class PetResource {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Response add(@Valid PetRequest pet) {
-    PetResponse response = PetMapper.toResponse(service.add(PetMapper.toEntity(pet)));
+    PetResponse response = service.add(pet);
     return Response.created(
             uriInfo.getAbsolutePathBuilder().path(String.valueOf(response.id())).build())
         .entity(response)
@@ -48,7 +47,7 @@ public class PetResource {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   public PetResponse update(@Valid PetRequest pet) {
-    return PetMapper.toResponse(service.update(PetMapper.toEntity(pet)));
+    return service.update(pet);
   }
 
   @GET
@@ -59,7 +58,7 @@ public class PetResource {
       @QueryParam("size") Integer size,
       @QueryParam("sort") String sortBy,
       @QueryParam("direction") String direction) {
-    return PetMapper.toResponseList(service.findByStatus(statuses, page, size, sortBy, direction));
+    return service.findByStatus(statuses, page, size, sortBy, direction);
   }
 
   @GET
@@ -70,7 +69,7 @@ public class PetResource {
       @QueryParam("size") Integer size,
       @QueryParam("sort") String sortBy,
       @QueryParam("direction") String direction) {
-    return PetMapper.toResponseList(service.findByTags(tags, page, size, sortBy, direction));
+    return service.findByTags(tags, page, size, sortBy, direction);
   }
 
   @GET
@@ -78,7 +77,6 @@ public class PetResource {
   public PetResponse getById(@PathParam("petId") @Positive Long petId) {
     return service
         .getById(petId)
-        .map(PetMapper::toResponse)
         .orElseThrow(() -> new NotFoundException("Pet not found: " + petId));
   }
 
@@ -92,7 +90,6 @@ public class PetResource {
     PetResponse response =
         service
             .updateWithForm(petId, name, status)
-            .map(PetMapper::toResponse)
             .orElseThrow(() -> new NotFoundException("Pet not found: " + petId));
     return Response.ok(response).build();
   }

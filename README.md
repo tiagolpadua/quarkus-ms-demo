@@ -9,58 +9,58 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=tiagolpadua_quarkus-ms-demo&metric=security_rating)](https://sonarcloud.io/project/overview?id=tiagolpadua_quarkus-ms-demo)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=tiagolpadua_quarkus-ms-demo&metric=sqale_rating)](https://sonarcloud.io/project/overview?id=tiagolpadua_quarkus-ms-demo)
 
-API REST em Quarkus inspirada no contrato do Swagger Petstore, organizada em camadas simples para facilitar estudo, evolução e testes.
+REST API built with Quarkus, inspired by the Swagger Petstore contract, organized in simple layers to facilitate learning, evolution, and testing.
 
-## Licença
+## License
 
-Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file.
 
-## Escopo didático
+## Educational Scope
 
-- Este projeto é didático e não entra no mérito de segurança de produção (autenticação, autorização e hardening).
-- O projeto é agnóstico em relação a banco; o H2 em memória é apenas a configuração padrão para execução local e testes rápidos.
+- This project is educational and does not address production security concerns (authentication, authorization, or hardening).
+- The project is database-agnostic; the in-memory H2 database is just the default configuration for local development and quick tests.
 
-O projeto expõe três áreas principais:
+The project exposes three main areas:
 
-- `pet`: cadastro e consulta de pets persistidos em H2
-- `store`: inventário e pedidos persistidos em H2
-- `user`: operações de usuário com persistência em H2 usando Panache
+- `pet`: pet registration and queries persisted in H2
+- `store`: inventory and orders persisted in H2
+- `user`: user operations with persistence in H2 using Panache
 
 ## Stack
 
 - Java 21
 - Quarkus 3.34.3
-- REST com Jackson
+- REST with Jackson
 - SmallRye OpenAPI + Swagger UI
 - Hibernate ORM Panache
-- H2 em memória
+- H2 in-memory
 - SmallRye Health
 - Micrometer
 - Quarkus Info
 - OpenTelemetry (OTLP tracing)
 - RESTEasy Problem (RFC 7807)
 - JUnit + RestAssured
-- Spotless com Google Java Format
+- Spotless with Google Java Format
 
-## Como rodar
+## How to Run
 
-Pré-requisitos:
+Prerequisites:
 
 - JDK 21+
 
-Suba a aplicação em modo de desenvolvimento:
+Start the application in development mode:
 
 ```sh
 ./run.sh
 ```
 
-Ou, se preferir, diretamente com Maven Wrapper:
+Or, if you prefer, directly with Maven Wrapper:
 
 ```sh
 ./mvnw quarkus:dev
 ```
 
-Com a aplicação em execução:
+With the application running:
 
 - API: `http://localhost:8080`
 - OpenAPI: `http://localhost:8080/q/openapi`
@@ -72,122 +72,122 @@ Com a aplicação em execução:
 - Metrics: `http://localhost:8080/q/metrics`
 - Info: `http://localhost:8080/q/info`
 
-Para inspecionar o banco H2 em memória durante o desenvolvimento, use:
+To inspect the in-memory H2 database during development, use:
 
 - `http://localhost:8080/q/dev-ui`
 
-Na Dev UI, abra a seção de datasource/H2 para navegar pelas tabelas e executar consultas SQL. O projeto já está configurado com `%dev.quarkus.datasource.dev-ui.allow-sql=true` para permitir esse uso em ambiente de desenvolvimento.
+In the Dev UI, open the datasource/H2 section to browse tables and run SQL queries. The project is already configured with `%dev.quarkus.datasource.dev-ui.allow-sql=true` to allow this in the development environment.
 
-## Docker Compose (Stack Local Completa)
+## Docker Compose (Full Local Stack)
 
-Para rodar a aplicação em container com suporte completo a observabilidade (OTEL Collector + Jaeger), use Docker Compose:
+To run the application in a container with full observability support (OTEL Collector + Jaeger), use Docker Compose:
 
 ```sh
-# Pré-requisito: build da aplicação e imagem Docker
+# Prerequisite: build the application and Docker image
 ./mvnw package -DskipTests
 
-# Ou use o script de conveniência
+# Or use the convenience script
 ./run-build-prod.sh
 
-# Suba a stack local completa (aplicação + OTEL Collector + Jaeger)
+# Start the full local stack (application + OTEL Collector + Jaeger)
 docker-compose up
 
-# Em outro terminal, veja os traces em tempo real:
+# In another terminal, view traces in real time:
 # Jaeger UI: http://localhost:16686
 # Swagger UI: http://localhost:8080/q/swagger-ui
 # Health: http://localhost:8080/q/health
 # Metrics: http://localhost:8080/q/metrics
 ```
 
-**O que está incluído na stack Docker Compose:**
+**What is included in the Docker Compose stack:**
 
-- **app** (Quarkus em JVM): porta 8080
+- **app** (Quarkus JVM): port 8080
   - OTEL endpoint: `http://otel-collector:4317`
-  - Health check automático
-  - Configurado para exportar traces OTLP
+  - Automatic health check
+  - Configured to export OTLP traces
 
-- **otel-collector** (OpenTelemetry Collector): portas 4317 (gRPC OTLP), 4318 (HTTP OTLP), 8888 (métricas Prometheus)
-  - Recebe spans da aplicação
-  - Exporta para Jaeger
-  - Logging de debug opcional para troubleshooting
-  - Limites de memória configurados
+- **otel-collector** (OpenTelemetry Collector): ports 4317 (gRPC OTLP), 4318 (HTTP OTLP), 8888 (Prometheus metrics)
+  - Receives spans from the application
+  - Exports to Jaeger
+  - Optional debug logging for troubleshooting
+  - Configured memory limits
 
-- **jaeger** (Distributed Tracing Backend): portas 6831 (UDP), 16686 (UI)
-  - UI de visualização de traces: http://localhost:16686
-  - Recebe spans do OTEL Collector
+- **jaeger** (Distributed Tracing Backend): ports 6831 (UDP), 16686 (UI)
+  - Trace visualization UI: <http://localhost:16686>
+  - Receives spans from OTEL Collector
 
 **Shutdown:**
 
 ```sh
 docker-compose down
 
-# Remover volumes (limpar dados da stack):
+# Remove volumes (clear stack data):
 docker-compose down -v
 ```
 
 **Troubleshooting:**
 
-- Se o container da app falhar ao iniciar, confirme que `./mvnw package` foi executado com sucesso
-- Se Jaeger não receber traces, valide que o health check do OTEL Collector passou (`docker-compose logs otel-collector`)
-- Para ativar logs detalhados do OTEL Collector, edite `otel-collector-config.yaml` e altere `loglevel: debug` em `exporters.logging`
+- If the app container fails to start, confirm that `./mvnw package` completed successfully
+- If Jaeger is not receiving traces, verify that the OTEL Collector health check passed (`docker-compose logs otel-collector`)
+- To enable detailed OTEL Collector logs, edit `otel-collector-config.yaml` and set `loglevel: debug` under `exporters.logging`
 
-## Observabilidade
+## Observability
 
-O projeto possui suporte nativo a OpenTelemetry via extensão oficial do Quarkus, com tracing OTLP e correlação de `traceId` e `spanId` nos logs.
+The project has native OpenTelemetry support via the official Quarkus extension, with OTLP tracing and correlation of `traceId` and `spanId` in logs.
 
-Também foram incluídas extensões complementares de operação:
+Complementary operational extensions are also included:
 
-- `quarkus-smallrye-health`: health checks padrão do Quarkus
-- `quarkus-micrometer`: instrumentação de métricas
-- `quarkus-micrometer-registry-prometheus`: exposição das métricas em `/q/metrics`
-- `quarkus-info`: metadados de build e git em endpoint dedicado
+- `quarkus-smallrye-health`: standard Quarkus health checks
+- `quarkus-micrometer`: metrics instrumentation
+- `quarkus-micrometer-registry-prometheus`: metrics exposure at `/q/metrics`
+- `quarkus-info`: build and git metadata at a dedicated endpoint
 
-Configurações principais:
+Main configuration settings:
 
-- `OTEL_EXPORTER_OTLP_ENDPOINT`: endpoint OTLP do collector. Padrão: `http://localhost:4317`
-- `OTEL_EXPORTER_OTLP_PROTOCOL`: protocolo OTLP. Padrão: `grpc`
-- `OTEL_EXPORTER_OTLP_HEADERS`: headers extras para autenticação com o collector
-- `OTEL_TRACES_SAMPLER`: sampler OTel. Padrão: `parentbased_traceidratio`
-- `OTEL_TRACES_SAMPLER_ARG`: taxa de amostragem quando aplicável. Padrão: `1.0`
-- `DEPLOYMENT_ENVIRONMENT`: atributo `deployment.environment` enviado nos recursos OTel. Padrão: `dev`
-- `OTEL_EXPORTER_OTLP_ENABLED`: em `dev`, controla se a exportação OTLP fica ativa. Padrão: `false`
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP collector endpoint. Default: `http://localhost:4317`
+- `OTEL_EXPORTER_OTLP_PROTOCOL`: OTLP protocol. Default: `grpc`
+- `OTEL_EXPORTER_OTLP_HEADERS`: extra headers for collector authentication
+- `OTEL_TRACES_SAMPLER`: OTel sampler. Default: `parentbased_traceidratio`
+- `OTEL_TRACES_SAMPLER_ARG`: sampling rate when applicable. Default: `1.0`
+- `DEPLOYMENT_ENVIRONMENT`: `deployment.environment` attribute sent in OTel resources. Default: `dev`
+- `OTEL_EXPORTER_OTLP_ENABLED`: in `dev`, controls whether OTLP export is active. Default: `false`
 
-Boas práticas adotadas:
+Best practices adopted:
 
-- sem uso de Java agent, aproveitando a instrumentação nativa do Quarkus
-- tracing habilitado com export OTLP configurável por ambiente
-- logs com correlação de trace para facilitar troubleshooting
-- SDK OTel desabilitado em testes para manter a suíte estável e silenciosa
-- métricas seguem Micrometer, que é o caminho recomendado pelo Quarkus para esse sinal
+- no Java agent used, leveraging Quarkus native instrumentation
+- tracing enabled with environment-configurable OTLP export
+- logs with trace correlation to facilitate troubleshooting
+- OTel SDK disabled in tests to keep the suite stable and quiet
+- metrics follow Micrometer, which is the Quarkus-recommended approach for this signal
 
-Contrato mínimo de observabilidade:
+Minimum observability contract:
 
-- toda resposta HTTP devolve `X-Request-Id`
-- se o cliente enviar `X-Request-Id`, o valor é preservado e reutilizado
-- se o cliente não enviar `X-Request-Id`, a aplicação gera um identificador automaticamente
-- os logs incluem `requestId`, `traceId`, `spanId` e `sampled`
-- cada request gera log de início e log de término com `method`, `path`, `status`, `durationMs` e `remoteIp`
-- métricas de negócio mínimas expostas em `/q/metrics`, incluindo `pet_create_total` e `user_create_total`
+- every HTTP response returns `X-Request-Id`
+- if the client sends `X-Request-Id`, the value is preserved and reused
+- if the client does not send `X-Request-Id`, the application generates an identifier automatically
+- logs include `requestId`, `traceId`, `spanId`, and `sampled`
+- each request generates a start log and an end log with `method`, `path`, `status`, `durationMs`, and `remoteIp`
+- minimum business metrics exposed at `/q/metrics`, including `pet_create_total` and `user_create_total`
 
-Isso cria uma convenção simples de correlação entre cliente, logs da aplicação e tracing distribuído, suficiente para troubleshooting rápido sem adicionar complexidade arquitetural ao projeto.
+This creates a simple correlation convention between the client, application logs, and distributed tracing, sufficient for quick troubleshooting without adding architectural complexity to the project.
 
-Como usar:
+How to use:
 
-- `GET /q/health`: visão agregada de saúde da aplicação
+- `GET /q/health`: aggregated application health view
 - `GET /q/health/live`: liveness probe
 - `GET /q/health/ready`: readiness probe
-- `GET /q/metrics`: métricas da aplicação e infraestrutura
-- `GET /q/info`: informações de build e git quando disponíveis
+- `GET /q/metrics`: application and infrastructure metrics
+- `GET /q/info`: build and git information when available
 
-## Scripts úteis
+## Useful Scripts
 
-- `./run.sh`: inicia a aplicação em modo dev
-- `./run-check.sh`: roda testes e valida formatação
-- `./run-spotless-apply.sh`: corrige formatação Java automaticamente
-- `./run-build-prod.sh`: gera o build de produção com `clean verify`
-- `./run-docker.sh`: gera a imagem Docker JVM e sobe a aplicação em container
+- `./run.sh`: starts the application in dev mode
+- `./run-check.sh`: runs tests and validates formatting
+- `./run-spotless-apply.sh`: automatically fixes Java formatting
+- `./run-build-prod.sh`: generates the production build with `clean verify`
+- `./run-docker.sh`: builds the JVM Docker image and runs the application in a container
 
-Equivalentes para Windows:
+Windows equivalents:
 
 - `run.cmd`
 - `run-check.cmd`
@@ -195,25 +195,25 @@ Equivalentes para Windows:
 - `run-build-prod.cmd`
 - `run-docker.cmd`
 
-Build de produção:
+Production build:
 
 ```sh
 ./run-build-prod.sh
 ```
 
-Execução em Docker:
+Run in Docker:
 
 ```sh
 ./run-docker.sh
 ```
 
-Variáveis opcionais para o script Docker:
+Optional variables for the Docker script:
 
-- `IMAGE_NAME`: nome da imagem. Padrão: `quarkus-ms-demo:jvm`
-- `CONTAINER_NAME`: nome do container. Padrão: `quarkus-ms-demo`
-- `HOST_PORT`: porta publicada no host. Padrão: `8080`
+- `IMAGE_NAME`: image name. Default: `quarkus-ms-demo:jvm`
+- `CONTAINER_NAME`: container name. Default: `quarkus-ms-demo`
+- `HOST_PORT`: port published on the host. Default: `8080`
 
-## Endpoints principais
+## Main Endpoints
 
 ### Pet
 
@@ -246,91 +246,91 @@ Variáveis opcionais para o script Docker:
 - `PUT /user/{username}`
 - `DELETE /user/{username}`
 
-## Persistência e dados iniciais
+## Persistence and Initial Data
 
-O projeto usa H2 em memória:
+The project uses H2 in-memory:
 
 - datasource: `jdbc:h2:mem:default`
-- estratégia de schema: `drop-and-create`
+- schema strategy: `drop-and-create`
 
-Ao subir a aplicação, usuários iniciais são carregados por [import.sql](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/resources/import.sql):
+When the application starts, initial users are loaded by [import.sql](src/main/resources/import.sql):
 
 - `seed-user-1`
 - `seed-user-2`
 
-Os domínios `pet`, `store` e `user` usam H2 em memória com schema recriado a cada boot e dados seedados por [import.sql](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/resources/import.sql).
+The `pet`, `store`, and `user` domains use H2 in-memory with schema recreated on every boot and data seeded by [import.sql](src/main/resources/import.sql).
 
-## Estrutura do projeto
+## Project Structure
 
 ```text
 src/main/java/org/acme
 ├── pet
-│   ├── dtos
-│   ├── mappers
 │   ├── persistence
 │   ├── resources
+│   │   └── dtos
 │   └── services
+│       └── mappers
 ├── store
-│   ├── dtos
-│   ├── mappers
 │   ├── persistence
 │   ├── resources
+│   │   └── dtos
 │   └── services
+│       └── mappers
 ├── user
-│   ├── dtos
-│   ├── mappers
 │   ├── persistence
 │   ├── resources
+│   │   └── dtos
 │   └── services
+│       └── mappers
 └── shared
 ```
 
-Resumo por pacote:
+Package summary:
 
-- `pet`: separação explícita entre recurso HTTP, serviço, DTOs e persistência JPA
-- `store`: segue a mesma organização de `pet`, com DTOs, mappers, persistência, resources e services
-- `user`: segue a mesma organização de `pet`, com DTOs, mappers, persistência, resources e services
-- `shared`: filtros e componentes transversais, como logging de requests
+- `pet`: explicit separation between HTTP resource, DTOs in `resources/dtos`, service, mappers in `services/mappers`, and JPA persistence
+- `store`: follows the same organization as `pet`, with DTOs under `resources/dtos` and mappers under `services/mappers`
+- `user`: follows the same organization as `pet`, with DTOs under `resources/dtos` and mappers under `services/mappers`
+- `shared`: filters and cross-cutting components, such as request logging
 
-## Exemplos de acesso ao banco
+## Database Access Examples
 
-Regra do projeto para consultas JPA:
+Project rule for JPA queries:
 
-- usar `@NamedQuery`, `@NamedNativeQuery` ou `Criteria API`
-- nao usar `EntityManager.createQuery` com JPQL em string
+- use `@NamedQuery`, `@NamedNativeQuery`, or `Criteria API`
+- do not use `EntityManager.createQuery` with JPQL strings
 
-Além do uso de Panache, o projeto também contém exemplos explícitos de outras abordagens JPA no domínio `user`:
+In addition to Panache, the project also contains explicit examples of other JPA approaches in the `user` domain:
 
 - `NamedQuery`: `GET /user/examples/named-query?status=1`
 - `NamedNativeQuery`: `GET /user/examples/named-native-query?emailDomain=example.com`
 - `Criteria API`: `GET /user/examples/criteria?usernamePrefix=seed-user&status=1&emailDomain=example.com`
 
-Exemplos no código:
+Code examples:
 
-- `findByStatusNamedQuery` em [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java)
-- `findByEmailDomainNativeQuery` em [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java)
-- `findByCriteria` em [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java)
+- `findByStatusNamedQuery` in [UserRepository.java](src/main/java/org/acme/user/persistence/UserRepository.java)
+- `findByEmailDomainNativeQuery` in [UserRepository.java](src/main/java/org/acme/user/persistence/UserRepository.java)
+- `findByCriteria` in [UserRepository.java](src/main/java/org/acme/user/persistence/UserRepository.java)
 
-Esses exemplos estão implementados em [User.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/User.java), [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java) e [UserResource.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/resources/UserResource.java).
+These examples are implemented in [User.java](src/main/java/org/acme/user/persistence/User.java), [UserRepository.java](src/main/java/org/acme/user/persistence/UserRepository.java), and [UserResource.java](src/main/java/org/acme/user/resources/UserResource.java).
 
-## Qualidade e testes
+## Quality and Tests
 
-Para rodar a suíte local:
+To run the test suite locally:
 
 ```sh
 ./mvnw test
 ```
 
-Os testes cobrem:
+The tests cover:
 
-- endpoints `pet`
-- endpoints `store`
-- endpoints `user`
-- documento OpenAPI e Swagger UI
+- `pet` endpoints
+- `store` endpoints
+- `user` endpoints
+- OpenAPI document and Swagger UI
 
-## Observações
+## Notes
 
-- A documentação OpenAPI publicada pela aplicação usa o título `Swagger Petstore`.
-- Erros HTTP produzidos pelos resources seguem o formato `application/problem+json` via extensão `quarkus-resteasy-problem`.
-- Há arquivos estáticos legados em `src/main/resources/META-INF/resources`, mas o foco atual do projeto está na API REST.
-- O projeto recomenda a extensão VS Code `redhat.vscode-quarkus` em `.vscode/extensions.json`.
+- The OpenAPI documentation published by the application uses the title `Swagger Petstore`.
+- HTTP errors produced by resources follow the `application/problem+json` format via the `quarkus-resteasy-problem` extension.
+- There are legacy static files in `src/main/resources/META-INF/resources`, but the current focus of the project is the REST API.
+- The project recommends the VS Code extension `redhat.vscode-quarkus` in `.vscode/extensions.json`.

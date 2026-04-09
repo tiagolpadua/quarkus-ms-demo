@@ -1,4 +1,4 @@
-package org.acme.store.dtos;
+package org.acme.store.resources.dtos;
 
 import java.time.OffsetDateTime;
 

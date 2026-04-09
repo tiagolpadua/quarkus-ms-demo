@@ -1,4 +1,4 @@
-package org.acme.user.dtos;
+package org.acme.user.resources.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;

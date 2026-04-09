@@ -10,6 +10,10 @@ import org.acme.pet.persistence.Pet;
 import org.acme.pet.persistence.PetRepository;
 import org.acme.store.persistence.Order;
 import org.acme.store.persistence.OrderRepository;
+import org.acme.store.resources.dtos.InventoryResponse;
+import org.acme.store.resources.dtos.OrderRequest;
+import org.acme.store.resources.dtos.OrderResponse;
+import org.acme.store.services.mappers.OrderMapper;
 
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -17,22 +21,24 @@ public class StoreService {
 
   private final OrderRepository orderRepository;
   private final PetRepository petRepository;
+  private final OrderMapper mapper;
 
-  public Map<String, Integer> getInventory() {
+  public InventoryResponse getInventory() {
     Map<String, Integer> inventory = new LinkedHashMap<>();
     for (Pet pet : petRepository.listAll()) {
       inventory.merge(pet.getStatus(), 1, Integer::sum);
     }
-    return inventory;
+    return new InventoryResponse(inventory);
   }
 
   @Transactional
-  public Order placeOrder(Order order) {
-    return orderRepository.save(order);
+  public OrderResponse placeOrder(OrderRequest orderRequest) {
+    Order order = mapper.toEntity(orderRequest);
+    return mapper.toResponse(orderRepository.save(order));
   }
 
-  public Optional<Order> getOrderById(Long orderId) {
-    return orderRepository.findOptionalById(orderId);
+  public Optional<OrderResponse> getOrderById(Long orderId) {
+    return orderRepository.findOptionalById(orderId).map(mapper::toResponse);
   }
 
   @Transactional

@@ -1,3 +1,3 @@
-package org.acme.pet.dtos;
+package org.acme.pet.resources.dtos;
 
 public record CategoryResponse(Long id, String name) {}

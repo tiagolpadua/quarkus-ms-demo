@@ -14,11 +14,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.acme.store.dtos.OrderRequest;
-import org.acme.store.dtos.OrderResponse;
-import org.acme.store.mappers.OrderMapper;
+import org.acme.store.resources.dtos.InventoryResponse;
+import org.acme.store.resources.dtos.OrderRequest;
+import org.acme.store.resources.dtos.OrderResponse;
 import org.acme.store.services.StoreService;
 
 @Path("/store")
@@ -33,15 +32,14 @@ public class StoreResource {
 
   @GET
   @Path("/inventory")
-  public Map<String, Integer> getInventory() {
+  public InventoryResponse getInventory() {
     return service.getInventory();
   }
 
   @POST
   @Path("/order")
   public Response placeOrder(@Valid OrderRequest order) {
-    OrderResponse response =
-        OrderMapper.toResponse(service.placeOrder(OrderMapper.toEntity(order)));
+    OrderResponse response = service.placeOrder(order);
     return Response.created(
             uriInfo
                 .getBaseUriBuilder()
@@ -57,7 +55,6 @@ public class StoreResource {
   public OrderResponse getOrderById(@PathParam("orderId") @Positive Long orderId) {
     return service
         .getOrderById(orderId)
-        .map(OrderMapper::toResponse)
         .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
   }
 

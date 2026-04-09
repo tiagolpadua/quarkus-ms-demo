@@ -1,4 +1,4 @@
-package org.acme.store.dtos;
+package org.acme.store.resources.dtos;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

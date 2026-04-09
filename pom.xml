@@ -15,6 +15,7 @@
     </license>
   </licenses>
   <properties>
+    <mapstruct.version>1.6.3</mapstruct.version>
     <quarkus.resteasy.problem.version>3.32.1</quarkus.resteasy.problem.version>
     <spotless.version>2.44.4</spotless.version>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -86,6 +87,11 @@
       <artifactId>quarkus-opentelemetry</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.quarkiverse.resteasy-problem</groupId>
       <artifactId>quarkus-resteasy-problem</artifactId>
       <version>${quarkus.resteasy.problem.version}</version>
@@ -116,9 +122,19 @@
         <configuration>
           <annotationProcessorPaths>
             <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+            <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
               <version>1.18.36</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok-mapstruct-binding</artifactId>
+              <version>0.2.0</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

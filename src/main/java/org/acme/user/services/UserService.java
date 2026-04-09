@@ -6,11 +6,11 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.acme.user.dtos.UserRequest;
-import org.acme.user.dtos.UserResponse;
-import org.acme.user.mappers.UserMapper;
 import org.acme.user.persistence.User;
 import org.acme.user.persistence.UserRepository;
+import org.acme.user.resources.dtos.UserRequest;
+import org.acme.user.resources.dtos.UserResponse;
+import org.acme.user.services.mappers.UserMapper;
 
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -18,13 +18,14 @@ public class UserService {
 
   private final UserRepository repository;
   private final MeterRegistry meterRegistry;
+  private final UserMapper mapper;
 
   @Transactional
   public UserResponse create(UserRequest userRequest) {
-    User user = UserMapper.toEntity(userRequest);
+    User user = mapper.toEntity(userRequest);
     repository.persist(user);
     meterRegistry.counter("user_create_total").increment();
-    return UserMapper.toResponse(user);
+    return mapper.toResponse(user);
   }
 
   @Transactional
@@ -33,7 +34,7 @@ public class UserService {
   }
 
   public Optional<UserResponse> getByUsername(String username) {
-    return repository.findByUsername(username).map(UserMapper::toResponse);
+    return repository.findByUsername(username).map(mapper::toResponse);
   }
 
   @Transactional
@@ -42,8 +43,8 @@ public class UserService {
         .findByUsername(username)
         .map(
             user -> {
-              UserMapper.updateEntity(userRequest, user);
-              return UserMapper.toResponse(user);
+              mapper.updateEntity(userRequest, user);
+              return mapper.toResponse(user);
             });
   }
 
@@ -53,20 +54,20 @@ public class UserService {
   }
 
   public List<UserResponse> list(int page, int size, String sortBy, String direction) {
-    return UserMapper.toResponseList(repository.listPaged(page, size, sortBy, direction));
+    return mapper.toResponseList(repository.listPaged(page, size, sortBy, direction));
   }
 
   public List<UserResponse> listByStatusNamedQuery(Integer userStatus) {
-    return UserMapper.toResponseList(repository.findByStatusNamedQuery(userStatus));
+    return mapper.toResponseList(repository.findByStatusNamedQuery(userStatus));
   }
 
   public List<UserResponse> listByEmailDomainNativeQuery(String emailDomain) {
-    return UserMapper.toResponseList(repository.findByEmailDomainNativeQuery(emailDomain));
+    return mapper.toResponseList(repository.findByEmailDomainNativeQuery(emailDomain));
   }
 
   public List<UserResponse> listByCriteria(
       String usernamePrefix, Integer userStatus, String emailDomainFragment) {
-    return UserMapper.toResponseList(
+    return mapper.toResponseList(
         repository.findByCriteria(usernamePrefix, userStatus, emailDomainFragment));
   }
 }
