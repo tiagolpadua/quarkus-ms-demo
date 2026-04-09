@@ -1,5 +1,7 @@
 package org.acme.store.resources;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -33,13 +35,13 @@ public class StoreResource {
 
   @POST
   @Path("/order")
-  public OrderResponse placeOrder(OrderRequest order) {
+  public OrderResponse placeOrder(@Valid OrderRequest order) {
     return OrderMapper.toResponse(service.placeOrder(OrderMapper.toEntity(order)));
   }
 
   @GET
   @Path("/order/{orderId}")
-  public OrderResponse getOrderById(@PathParam("orderId") Long orderId) {
+  public OrderResponse getOrderById(@PathParam("orderId") @Positive Long orderId) {
     return service
         .getOrderById(orderId)
         .map(OrderMapper::toResponse)
@@ -48,7 +50,7 @@ public class StoreResource {
 
   @DELETE
   @Path("/order/{orderId}")
-  public Response deleteOrder(@PathParam("orderId") Long orderId) {
+  public Response deleteOrder(@PathParam("orderId") @Positive Long orderId) {
     if (!service.deleteOrder(orderId)) {
       throw new NotFoundException("Order not found: " + orderId);
     }

@@ -109,4 +109,23 @@ public class PetResourceTest {
         .statusCode(404)
         .contentType(containsString("application/problem+json"));
   }
+
+  @Test
+  public void testPetValidation() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(
+            """
+            {
+              "name": "",
+              "photoUrls": [],
+              "status": "invalid"
+            }
+            """)
+        .when()
+        .post("/pet")
+        .then()
+        .statusCode(400)
+        .contentType(containsString("application/problem+json"));
+  }
 }

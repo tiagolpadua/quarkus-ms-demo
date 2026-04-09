@@ -58,4 +58,25 @@ public class StoreResourceTest {
         .statusCode(404)
         .contentType(containsString("application/problem+json"));
   }
+
+  @Test
+  public void testOrderValidation() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(
+            """
+            {
+              "petId": 0,
+              "quantity": 0,
+              "shipDate": "",
+              "status": "",
+              "complete": null
+            }
+            """)
+        .when()
+        .post("/store/order")
+        .then()
+        .statusCode(400)
+        .contentType(containsString("application/problem+json"));
+  }
 }

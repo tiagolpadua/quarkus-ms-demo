@@ -1,5 +1,8 @@
 package org.acme.user.resources;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -53,25 +56,25 @@ public class UserResource {
   }
 
   @POST
-  public UserResponse create(UserRequest user) {
+  public UserResponse create(@Valid UserRequest user) {
     return service.create(user);
   }
 
   @POST
   @Path("/createWithArray")
-  public List<UserResponse> createWithArray(List<UserRequest> users) {
+  public List<UserResponse> createWithArray(@NotEmpty List<@Valid UserRequest> users) {
     return service.createMany(users);
   }
 
   @POST
   @Path("/createWithList")
-  public List<UserResponse> createWithList(List<UserRequest> users) {
+  public List<UserResponse> createWithList(@NotEmpty List<@Valid UserRequest> users) {
     return service.createMany(users);
   }
 
   @GET
   @Path("/{username}")
-  public UserResponse getByUsername(@PathParam("username") String username) {
+  public UserResponse getByUsername(@PathParam("username") @NotBlank String username) {
     return service
         .getByUsername(username)
         .orElseThrow(() -> new NotFoundException("User not found: " + username));
@@ -79,7 +82,8 @@ public class UserResource {
 
   @PUT
   @Path("/{username}")
-  public Response update(@PathParam("username") String username, UserRequest user) {
+  public Response update(
+      @PathParam("username") @NotBlank String username, @Valid UserRequest user) {
     UserResponse response =
         service
             .update(username, user)
@@ -89,7 +93,7 @@ public class UserResource {
 
   @DELETE
   @Path("/{username}")
-  public Response delete(@PathParam("username") String username) {
+  public Response delete(@PathParam("username") @NotBlank String username) {
     if (!service.delete(username)) {
       throw new NotFoundException("User not found: " + username);
     }

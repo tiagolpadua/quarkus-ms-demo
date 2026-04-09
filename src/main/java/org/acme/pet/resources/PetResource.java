@@ -1,5 +1,7 @@
 package org.acme.pet.resources;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -31,13 +33,13 @@ public class PetResource {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public PetResponse add(PetRequest pet) {
+  public PetResponse add(@Valid PetRequest pet) {
     return PetMapper.toResponse(service.add(PetMapper.toEntity(pet)));
   }
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public PetResponse update(PetRequest pet) {
+  public PetResponse update(@Valid PetRequest pet) {
     return PetMapper.toResponse(service.update(PetMapper.toEntity(pet)));
   }
 
@@ -55,7 +57,7 @@ public class PetResource {
 
   @GET
   @Path("/{petId}")
-  public PetResponse getById(@PathParam("petId") Long petId) {
+  public PetResponse getById(@PathParam("petId") @Positive Long petId) {
     return service
         .getById(petId)
         .map(PetMapper::toResponse)
@@ -79,7 +81,8 @@ public class PetResource {
 
   @DELETE
   @Path("/{petId}")
-  public Response delete(@HeaderParam("api_key") String apiKey, @PathParam("petId") Long petId) {
+  public Response delete(
+      @HeaderParam("api_key") String apiKey, @PathParam("petId") @Positive Long petId) {
     if (!service.delete(petId)) {
       throw new NotFoundException("Pet not found: " + petId);
     }

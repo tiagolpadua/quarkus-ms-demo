@@ -136,4 +136,26 @@ public class UserResourceTest {
         .statusCode(404)
         .contentType(containsString("application/problem+json"));
   }
+
+  @Test
+  public void testUserValidation() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(
+            """
+            {
+              "username": "ab",
+              "firstName": "",
+              "lastName": "",
+              "email": "invalid-email",
+              "phone": "x",
+              "userStatus": 99
+            }
+            """)
+        .when()
+        .post("/user")
+        .then()
+        .statusCode(400)
+        .contentType(containsString("application/problem+json"));
+  }
 }
