@@ -9,11 +9,9 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import org.acme.user.dtos.LoginResponseData;
 import org.acme.user.dtos.UserData;
 
 @Path("/user")
@@ -45,23 +43,6 @@ public class UserResource {
   @Path("/createWithList")
   public Response createWithList(List<UserData> users) {
     service.createMany(users);
-    return Response.ok().build();
-  }
-
-  @GET
-  @Path("/login")
-  public Response login(
-      @QueryParam("username") String username, @QueryParam("password") String password) {
-    LoginResponseData login = service.login(username, password);
-    return Response.ok(login.getMessage())
-        .header("X-Expires-After", login.getExpiresAfter())
-        .header("X-Rate-Limit", login.getRateLimit())
-        .build();
-  }
-
-  @GET
-  @Path("/logout")
-  public Response logout() {
     return Response.ok().build();
   }
 

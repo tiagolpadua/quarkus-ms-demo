@@ -75,8 +75,6 @@ Com a aplicação em execução:
 - `POST /user`
 - `POST /user/createWithArray`
 - `POST /user/createWithList`
-- `GET /user/login`
-- `GET /user/logout`
 - `GET /user/{username}`
 - `PUT /user/{username}`
 - `DELETE /user/{username}`

@@ -3,11 +3,9 @@ package org.acme.user;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.acme.user.dtos.LoginResponseData;
 import org.acme.user.dtos.UserData;
 
 @ApplicationScoped
@@ -41,7 +39,6 @@ public class UserService {
               user.setFirstName(userData.getFirstName());
               user.setLastName(userData.getLastName());
               user.setEmail(userData.getEmail());
-              user.setPassword(userData.getPassword());
               user.setPhone(userData.getPhone());
               user.setUserStatus(userData.getUserStatus());
               return toData(user);
@@ -57,27 +54,12 @@ public class UserService {
     return repository.listAll().stream().map(this::toData).collect(Collectors.toList());
   }
 
-  public LoginResponseData login(String username, String password) {
-    LoginResponseData response = new LoginResponseData();
-    response.setMessage(
-        repository
-                .findByUsername(username)
-                .filter(user -> user.getPassword().equals(password))
-                .isPresent()
-            ? "logged in user session:" + username
-            : "invalid username/password");
-    response.setExpiresAfter(OffsetDateTime.now().plusHours(1).toString());
-    response.setRateLimit(500);
-    return response;
-  }
-
   private User toEntity(UserData source, User target) {
     target.setId(source.getId());
     target.setUsername(source.getUsername());
     target.setFirstName(source.getFirstName());
     target.setLastName(source.getLastName());
     target.setEmail(source.getEmail());
-    target.setPassword(source.getPassword());
     target.setPhone(source.getPhone());
     target.setUserStatus(source.getUserStatus());
     return target;
@@ -90,7 +72,6 @@ public class UserService {
     user.setFirstName(source.getFirstName());
     user.setLastName(source.getLastName());
     user.setEmail(source.getEmail());
-    user.setPassword(source.getPassword());
     user.setPhone(source.getPhone());
     user.setUserStatus(source.getUserStatus());
     return user;

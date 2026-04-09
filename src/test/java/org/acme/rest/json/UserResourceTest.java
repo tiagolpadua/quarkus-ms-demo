@@ -1,7 +1,6 @@
 package org.acme.rest.json;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
@@ -25,7 +24,6 @@ public class UserResourceTest {
               "firstName": "User",
               "lastName": "One",
               "email": "user1@example.com",
-              "password": "secret",
               "phone": "111-111",
               "userStatus": 1
             }
@@ -51,7 +49,6 @@ public class UserResourceTest {
               "firstName": "Updated",
               "lastName": "One",
               "email": "updated.user1@example.com",
-              "password": "secret",
               "phone": "222-222",
               "userStatus": 2
             }
@@ -63,19 +60,6 @@ public class UserResourceTest {
         .body("firstName", is("Updated"), "userStatus", is(2));
 
     given()
-        .queryParam("username", "user1")
-        .queryParam("password", "secret")
-        .when()
-        .get("/user/login")
-        .then()
-        .statusCode(200)
-        .header("X-Expires-After", containsString("T"))
-        .header("X-Rate-Limit", is("500"))
-        .body(containsString("logged in user session:user1"));
-
-    given().when().get("/user/logout").then().statusCode(200);
-
-    given()
         .contentType(ContentType.JSON)
         .body(
             """
@@ -85,7 +69,6 @@ public class UserResourceTest {
                 "firstName": "Bulk",
                 "lastName": "Array",
                 "email": "bulk-array@example.com",
-                "password": "secret",
                 "phone": "333-333",
                 "userStatus": 1
               }
@@ -106,7 +89,6 @@ public class UserResourceTest {
                 "firstName": "Bulk",
                 "lastName": "List",
                 "email": "bulk-list@example.com",
-                "password": "secret",
                 "phone": "444-444",
                 "userStatus": 1
               }
