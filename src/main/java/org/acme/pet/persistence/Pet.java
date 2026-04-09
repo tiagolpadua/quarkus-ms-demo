@@ -1,6 +1,5 @@
 package org.acme.pet.persistence;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -25,7 +24,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@RegisterForReflection
 public class Pet {
 
   @Id

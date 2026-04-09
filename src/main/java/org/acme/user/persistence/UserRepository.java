@@ -1,5 +1,6 @@
 package org.acme.user.persistence;
 
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.acme.shared.pagination.PageResult;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {
@@ -27,9 +29,17 @@ public class UserRepository implements PanacheRepository<User> {
   }
 
   public List<User> listPaged(int page, int size, String sortBy, String direction) {
+    return listPageResult(page, size, sortBy, direction).items();
+  }
+
+  public PageResult<User> listPageResult(int page, int size, String sortBy, String direction) {
     String field = sanitizeSortField(sortBy);
-    Sort sort = isDescending(direction) ? Sort.descending(field) : Sort.ascending(field);
-    return findAll(sort).page(Page.of(page, size)).list();
+    String normalizedDirection = isDescending(direction) ? "desc" : "asc";
+    Sort sort = "desc".equals(normalizedDirection) ? Sort.descending(field) : Sort.ascending(field);
+    PanacheQuery<User> query = findAll(sort);
+    long totalElements = query.count();
+    List<User> users = query.page(Page.of(page, size)).list();
+    return new PageResult<>(users, page, size, totalElements, field, normalizedDirection);
   }
 
   public List<User> findByStatusNamedQuery(Integer userStatus) {

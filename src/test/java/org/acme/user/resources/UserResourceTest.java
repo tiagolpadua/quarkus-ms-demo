@@ -176,6 +176,47 @@ class UserResourceTest {
   }
 
   @Test
+  void testUserPagedListReturnsPaginationMetadata() {
+    given()
+        .queryParam("page", 0)
+        .queryParam("size", 1)
+        .queryParam("sort", "username")
+        .queryParam("direction", "desc")
+        .when()
+        .get("/user/paged")
+        .then()
+        .statusCode(200)
+        .header("X-Total-Count", not(emptyOrNullString()))
+        .header("Link", containsString("rel=\"next\""))
+        .body("items.size()", is(1))
+        .body("page.number", is(0))
+        .body("page.size", is(1))
+        .body("page.totalElements", greaterThanOrEqualTo(2))
+        .body("page.totalPages", greaterThanOrEqualTo(2))
+        .body("page.first", is(true))
+        .body("page.last", is(false))
+        .body("page.hasNext", is(true))
+        .body("page.hasPrevious", is(false))
+        .body("sort.by", is("username"))
+        .body("sort.direction", is("desc"));
+
+    given()
+        .queryParam("page", 1)
+        .queryParam("size", 1)
+        .queryParam("sort", "username")
+        .queryParam("direction", "desc")
+        .when()
+        .get("/user/paged")
+        .then()
+        .statusCode(200)
+        .header("Link", containsString("rel=\"prev\""))
+        .body("items.size()", is(1))
+        .body("page.number", is(1))
+        .body("page.first", is(false))
+        .body("page.hasPrevious", is(true));
+  }
+
+  @Test
   void testRequestCorrelationHeaders() {
     given()
         .header("X-Request-Id", "manual-correlation-id")

@@ -6,6 +6,10 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.acme.shared.pagination.PageMetadata;
+import org.acme.shared.pagination.PageResult;
+import org.acme.shared.pagination.PagedResponse;
+import org.acme.shared.pagination.SortMetadata;
 import org.acme.user.persistence.User;
 import org.acme.user.persistence.UserRepository;
 import org.acme.user.resources.dtos.UserRequest;
@@ -55,6 +59,28 @@ public class UserService {
 
   public List<UserResponse> list(int page, int size, String sortBy, String direction) {
     return mapper.toResponseList(repository.listPaged(page, size, sortBy, direction));
+  }
+
+  public PagedResponse<UserResponse> listPaged(
+      int page, int size, String sortBy, String direction) {
+    PageResult<User> result = repository.listPageResult(page, size, sortBy, direction);
+    List<UserResponse> items = mapper.toResponseList(result.items());
+    int totalPages =
+        result.totalElements() == 0
+            ? 0
+            : Math.toIntExact((result.totalElements() + result.size() - 1) / result.size());
+    PageMetadata pageMetadata =
+        new PageMetadata(
+            result.page(),
+            result.size(),
+            result.totalElements(),
+            totalPages,
+            result.page() == 0,
+            totalPages == 0 || result.page() >= totalPages - 1,
+            result.page() + 1 < totalPages,
+            result.page() > 0);
+    SortMetadata sortMetadata = new SortMetadata(result.sortBy(), result.direction());
+    return new PagedResponse<>(items, pageMetadata, sortMetadata);
   }
 
   public List<UserResponse> listByStatusNamedQuery(Integer userStatus) {

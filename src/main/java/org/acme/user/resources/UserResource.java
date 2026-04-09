@@ -17,11 +17,13 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Link;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.acme.shared.pagination.PagedResponse;
 import org.acme.user.resources.dtos.UserRequest;
 import org.acme.user.resources.dtos.UserResponse;
 import org.acme.user.services.UserService;
@@ -43,6 +45,20 @@ public class UserResource {
       @QueryParam("sort") @DefaultValue("username") String sortBy,
       @QueryParam("direction") @DefaultValue("asc") String direction) {
     return service.list(page, size, sortBy, direction);
+  }
+
+  @GET
+  @Path("/paged")
+  public Response listPaged(
+      @QueryParam("page") @DefaultValue("0") @Min(0) int page,
+      @QueryParam("size") @DefaultValue("20") @Min(1) @Max(100) int size,
+      @QueryParam("sort") @DefaultValue("username") String sortBy,
+      @QueryParam("direction") @DefaultValue("asc") String direction) {
+    PagedResponse<UserResponse> pagedResponse = service.listPaged(page, size, sortBy, direction);
+    Response.ResponseBuilder responseBuilder =
+        Response.ok(pagedResponse).header("X-Total-Count", pagedResponse.page().totalElements());
+    addPaginationLinks(responseBuilder, pagedResponse);
+    return responseBuilder.build();
   }
 
   @GET
@@ -113,4 +129,50 @@ public class UserResource {
     }
     return Response.noContent().build();
   }
+
+  private void addPaginationLinks(
+      Response.ResponseBuilder responseBuilder, PagedResponse<UserResponse> pagedResponse) {
+    PageLinks pageLinks = buildPageLinks(pagedResponse);
+    responseBuilder.links(pageLinks.self());
+    if (pageLinks.next() != null) {
+      responseBuilder.links(pageLinks.next());
+    }
+    if (pageLinks.prev() != null) {
+      responseBuilder.links(pageLinks.prev());
+    }
+  }
+
+  private PageLinks buildPageLinks(PagedResponse<UserResponse> pagedResponse) {
+    int pageNumber = pagedResponse.page().number();
+    int pageSize = pagedResponse.page().size();
+    String sortBy = pagedResponse.sort().by();
+    String direction = pagedResponse.sort().direction();
+
+    Link self = buildPageLink(pageNumber, pageSize, sortBy, direction, "self");
+    Link next =
+        pagedResponse.page().hasNext()
+            ? buildPageLink(pageNumber + 1, pageSize, sortBy, direction, "next")
+            : null;
+    Link prev =
+        pagedResponse.page().hasPrevious()
+            ? buildPageLink(pageNumber - 1, pageSize, sortBy, direction, "prev")
+            : null;
+    return new PageLinks(self, next, prev);
+  }
+
+  private Link buildPageLink(int page, int size, String sortBy, String direction, String rel) {
+    return Link.fromUri(
+            uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .queryParam("sort", sortBy)
+                .queryParam("direction", direction)
+                .build())
+        .rel(rel)
+        .type(MediaType.APPLICATION_JSON)
+        .build();
+  }
+
+  private record PageLinks(Link self, Link next, Link prev) {}
 }
