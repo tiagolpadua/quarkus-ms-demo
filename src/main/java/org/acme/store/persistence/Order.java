@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class Order {
   private Integer quantity;
 
   @Column(nullable = false)
-  private String shipDate;
+  private OffsetDateTime shipDate;
 
   @Column(nullable = false)
   private String status;

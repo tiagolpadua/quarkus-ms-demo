@@ -19,4 +19,4 @@ INSERT INTO pet_tags (pet_id, sort_order, tag_id, tag_name)
 VALUES (2, 0, 2, 'indoor');
 
 INSERT INTO store_order (id, petId, quantity, shipDate, status, complete)
-VALUES (nextval('store_order_seq'), 1, 1, '2026-04-09T10:15:30Z', 'placed', false);
+VALUES (nextval('store_order_seq'), 1, 1, '2026-04-09T10:15:30+00:00', 'placed', false);

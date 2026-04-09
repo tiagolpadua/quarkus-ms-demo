@@ -12,7 +12,7 @@ A base tecnica esta moderna e pragmatica (Java 21 + Quarkus 3.34.3 + Panache + B
 Em termos de engenharia, o projeto acerta na simplicidade e na legibilidade. Onde pode melhorar sem overengineering:
 
 - fortalecer baseline de operacao e consistencia
-- evoluir cobertura de cenarios de borda e operacao
+- evoluir observabilidade conforme maturidade de operacao
 
 Conclusao curta: excelente base para onboarding e evolucao controlada. Com ajustes incrementais, vira uma base pequena, profissional e consistente.
 
@@ -25,17 +25,17 @@ Conclusao curta: excelente base para onboarding e evolucao controlada. Com ajust
 | Boas praticas com Quarkus                  |  8.5 | Uso idiomatico de extensoes e dev mode; quase nada de "Springficacao"                         |
 | API REST                                   |  8.4 | Endpoints coerentes com Petstore, com criacao padronizada e listagens com parametros de escala |
 | DTOs, entidades e mapeamento               |  8.3 | Separacao clara entre API e persistencia, com embeddables no pacote de dominio                 |
-| Persistencia de dados                      |  8.2 | Panache/JPA bem aplicado para didatico; projeto permanece agnostico em relacao ao banco       |
+| Persistencia de dados                      |  8.5 | Panache/JPA bem aplicado para didatico; contrato temporal tipado e projeto agnostico a banco  |
 | Validacao e tratamento de erros            |  8.2 | Bean Validation + RFC 7807 funcionando bem                                                    |
 | Configuracao e ambientes                   |  8.3 | application.properties claro e perfis dev/test objetivos                                      |
 | Experiencia do desenvolvedor (DX)          |  9.0 | README bom, scripts, dev-ui, hot reload, Swagger e fluxo simples                              |
 | Qualidade de codigo e consistencia         |  8.6 | Codigo limpo, nomes claros e responsabilidades mais consistentes entre camadas                |
-| Testes                                     |  8.0 | Boa cobertura de API e validacao; faltam cenarios de borda/operacao                           |
+| Testes                                     |  8.6 | Boa cobertura de API, validacao e cenarios operacionais relevantes                             |
 | Observabilidade e operacao                 |  8.6 | Health + metrics + info + OTel + correlacao no log                                            |
 | Build, dependencias e manutencao           |  8.4 | pom enxuto, plugin Quarkus correto, Spotless no validate                                      |
 | Escalabilidade de codigo e evolucao futura |  7.9 | Estrutura permite crescer, mas precisa padroes de governanca minima                           |
 
-Nota global recomendada: 8.7/10 para contexto didatico-profissional.
+Nota global recomendada: 8.9/10 para contexto didatico-profissional.
 
 ## 3. Problemas encontrados
 
@@ -49,23 +49,16 @@ Nao ha itens em aberto nesta prioridade apos os ajustes aplicados.
 
 ### Baixa prioridade
 
-1. Ship date como String
-
-- Em store, shipDate e String na persistencia e DTO.
-- Impacto: menor robustez de tipo e validacao temporal.
-
-2. Cobertura de testes focada em caminho feliz + validacao
-
-- Bom para didatico, mas faltam testes de operacao (ex.: concorrencia, falhas internas, resiliencia).
+Nao ha itens em aberto nesta prioridade apos os ajustes aplicados.
 
 ## 4. Sugestoes objetivas de melhoria
 
 ## 4.1 Curto prazo (essencial)
 
-1. Cobrir cenarios operacionais adicionais
+1. Consolidar contratos de observabilidade
 
-- Adicionar testes para casos de borda e regressao (carga de payload, erros de formato e filtros combinados).
-- Beneficio: reduz risco de comportamento inesperado em evolucoes futuras.
+- Definir convencao minima de correlacao de request nos logs e metadados de operacao.
+- Beneficio: troubleshooting mais rapido sem aumentar complexidade arquitetural.
 
 ## 4.2 Medio prazo (importante, nao urgente)
 
@@ -73,10 +66,6 @@ Nao ha itens em aberto nesta prioridade apos os ajustes aplicados.
 
 - Adicionar request-id de borda (header) e propagacao no log.
 - Incluir 1 ou 2 metricas de negocio (ex.: pet_create_total, user_create_total).
-
-2. Melhorar contrato temporal
-
-- Trocar shipDate para OffsetDateTime no DTO/entidade (ou validar formato ISO estrito).
 
 ## 4.3 Opcional (nice to have)
 

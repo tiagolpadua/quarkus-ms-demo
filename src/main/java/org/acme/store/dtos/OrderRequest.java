@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import java.time.OffsetDateTime;
 
 public record OrderRequest(
     @Positive(message = "id must be greater than zero") Long id,
@@ -12,6 +13,6 @@ public record OrderRequest(
     @NotNull(message = "quantity is required")
         @Min(value = 1, message = "quantity must be at least 1")
         Integer quantity,
-    @NotBlank(message = "shipDate is required") String shipDate,
+    @NotNull(message = "shipDate is required") OffsetDateTime shipDate,
     @NotBlank(message = "status is required") String status,
     @NotNull(message = "complete is required") Boolean complete) {}
