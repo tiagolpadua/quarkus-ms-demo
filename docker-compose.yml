@@ -1,0 +1,84 @@
+services:
+  # OpenTelemetry Collector - receives traces from app and exports to Jaeger
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "9411:9411"   # Zipkin receiver
+      - "8888:8888"   # Prometheus metrics port
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command:
+      - "--config=/etc/otel-collector-config.yaml"
+    environment:
+      - GOGC=80
+    depends_on:
+      - jaeger
+    networks:
+      - quarkus-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/healthz" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Jaeger - distributed tracing backend
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "6831:6831/udp"  # Jaeger agent - thrift compact thrift protocol
+      - "16686:16686"    # Jaeger UI
+      - "14250:14250"    # Jaeger gRPC receiver
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_OTLP_HOST_PORT=0.0.0.0:4317
+    networks:
+      - quarkus-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:16686/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Quarkus Application
+  app:
+    build:
+      context: .
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: quarkus-app
+    ports:
+      - "8080:8080"
+    environment:
+      # OTEL Configuration
+      - OTEL_SDK_DISABLED=false
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=quarkus-ms-demo,service.version=1.0.0
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      # Quarkus Configuration
+      - QUARKUS_LOG_LEVEL=INFO
+      - QUARKUS_HTTP_HOST=0.0.0.0
+      - QUARKUS_HTTP_PORT=8080
+    depends_on:
+      otel-collector:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    networks:
+      - quarkus-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    stdin_open: true
+    tty: true
+
+networks:
+  quarkus-network:
+    driver: bridge

@@ -67,18 +67,28 @@ Nao ha itens em aberto nesta prioridade apos os ajustes aplicados.
 - Adicionar request-id de borda (header) e propagacao no log.
 - Incluir 1 ou 2 metricas de negocio (ex.: pet_create_total, user_create_total).
 
-## 4.3 Opcional (nice to have)
+## 4.3 Opcional (nice to have) - IMPLEMENTADO
 
-1. Docker Compose para stack local completa
+### ✅ Docker Compose para stack local completa
 
 - app + otel collector + jaeger.
-- Excelente para demos, onboarding e troubleshooting.
+- Arquivos criados:
+  - `docker-compose.yml`: stack com app (port 8080), OTEL Collector (port 4317), Jaeger (UI 16686)
+  - `otel-collector-config.yaml`: configuracao do collector com pipelines de trace, metrica e log
+  - `.dockerignore`: otimiza o build do container
+- Como usar:
+  ```bash
+  ./mvnw package -DskipTests  # ou ./run-build-prod.sh
+  docker compose up
+  # Jaeger UI: http://localhost:16686
+  ```
+- Beneficioso para demos, onboarding e troubleshooting de traces distribuidos.
 
-2. Testes de contrato OpenAPI mais robustos
+### Em Progresso: Testes de contrato OpenAPI
 
 - Validar schema de payload de erro e rotas criticas.
 
-3. Tarefas unificadas de comandos
+### Pendente: Tarefas unificadas de comandos
 
 - Makefile ou task runner unico, mantendo scripts sh/cmd para multiplataforma.
 

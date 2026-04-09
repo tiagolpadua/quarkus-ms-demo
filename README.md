@@ -78,6 +78,59 @@ Para inspecionar o banco H2 em memória durante o desenvolvimento, use:
 
 Na Dev UI, abra a seção de datasource/H2 para navegar pelas tabelas e executar consultas SQL. O projeto já está configurado com `%dev.quarkus.datasource.dev-ui.allow-sql=true` para permitir esse uso em ambiente de desenvolvimento.
 
+## Docker Compose (Stack Local Completa)
+
+Para rodar a aplicação em container com suporte completo a observabilidade (OTEL Collector + Jaeger), use Docker Compose:
+
+```sh
+# Pré-requisito: build da aplicação e imagem Docker
+./mvnw package -DskipTests
+
+# Ou use o script de conveniência
+./run-build-prod.sh
+
+# Suba a stack local completa (aplicação + OTEL Collector + Jaeger)
+docker-compose up
+
+# Em outro terminal, veja os traces em tempo real:
+# Jaeger UI: http://localhost:16686
+# Swagger UI: http://localhost:8080/q/swagger-ui
+# Health: http://localhost:8080/q/health
+# Metrics: http://localhost:8080/q/metrics
+```
+
+**O que está incluído na stack Docker Compose:**
+
+- **app** (Quarkus em JVM): porta 8080
+  - OTEL endpoint: `http://otel-collector:4317`
+  - Health check automático
+  - Configurado para exportar traces OTLP
+
+- **otel-collector** (OpenTelemetry Collector): portas 4317 (gRPC OTLP), 4318 (HTTP OTLP), 8888 (métricas Prometheus)
+  - Recebe spans da aplicação
+  - Exporta para Jaeger
+  - Logging de debug opcional para troubleshooting
+  - Limites de memória configurados
+
+- **jaeger** (Distributed Tracing Backend): portas 6831 (UDP), 16686 (UI)
+  - UI de visualização de traces: http://localhost:16686
+  - Recebe spans do OTEL Collector
+
+**Shutdown:**
+
+```sh
+docker-compose down
+
+# Remover volumes (limpar dados da stack):
+docker-compose down -v
+```
+
+**Troubleshooting:**
+
+- Se o container da app falhar ao iniciar, confirme que `./mvnw package` foi executado com sucesso
+- Se Jaeger não receber traces, valide que o health check do OTEL Collector passou (`docker-compose logs otel-collector`)
+- Para ativar logs detalhados do OTEL Collector, edite `otel-collector-config.yaml` e altere `loglevel: debug` em `exporters.logging`
+
 ## Observabilidade
 
 O projeto possui suporte nativo a OpenTelemetry via extensão oficial do Quarkus, com tracing OTLP e correlação de `traceId` e `spanId` nos logs.
