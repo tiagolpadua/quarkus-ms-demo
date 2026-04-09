@@ -16,6 +16,9 @@ O projeto expõe três áreas principais:
 - SmallRye OpenAPI + Swagger UI
 - Hibernate ORM Panache
 - H2 em memória
+- SmallRye Health
+- Micrometer
+- Quarkus Info
 - OpenTelemetry (OTLP tracing)
 - RESTEasy Problem (RFC 7807)
 - MapStruct
@@ -46,6 +49,11 @@ Com a aplicação em execução:
 - OpenAPI: `http://localhost:8080/q/openapi`
 - Swagger UI: `http://localhost:8080/q/swagger-ui`
 - Dev UI: `http://localhost:8080/q/dev-ui`
+- Health: `http://localhost:8080/q/health`
+- Readiness: `http://localhost:8080/q/health/ready`
+- Liveness: `http://localhost:8080/q/health/live`
+- Metrics: `http://localhost:8080/q/metrics`
+- Info: `http://localhost:8080/q/info`
 
 Para inspecionar o banco H2 em memória durante o desenvolvimento, use:
 
@@ -56,6 +64,12 @@ Na Dev UI, abra a seção de datasource/H2 para navegar pelas tabelas e executar
 ## Observabilidade
 
 O projeto possui suporte nativo a OpenTelemetry via extensão oficial do Quarkus, com tracing OTLP e correlação de `traceId` e `spanId` nos logs.
+
+Também foram incluídas extensões complementares de operação:
+
+- `quarkus-smallrye-health`: health checks padrão do Quarkus
+- `quarkus-micrometer`: métricas da aplicação, JVM, sistema e servidor HTTP
+- `quarkus-info`: metadados de build e git em endpoint dedicado
 
 Configurações principais:
 
@@ -73,7 +87,15 @@ Boas práticas adotadas:
 - tracing habilitado com export OTLP configurável por ambiente
 - logs com correlação de trace para facilitar troubleshooting
 - SDK OTel desabilitado em testes para manter a suíte estável e silenciosa
-- métricas e logs OTEL não foram habilitados por padrão porque, na documentação oficial do Quarkus atual, esses sinais ainda são tratados separadamente e métricas seguem fluxo recomendado via Micrometer bridge quando necessário
+- métricas seguem Micrometer, que é o caminho recomendado pelo Quarkus para esse sinal
+
+Como usar:
+
+- `GET /q/health`: visão agregada de saúde da aplicação
+- `GET /q/health/live`: liveness probe
+- `GET /q/health/ready`: readiness probe
+- `GET /q/metrics`: métricas da aplicação e infraestrutura
+- `GET /q/info`: informações de build e git quando disponíveis
 
 ## Scripts úteis
 
@@ -168,7 +190,7 @@ Além do uso de Panache, o projeto também contém exemplos explícitos de outra
 - `NamedNativeQuery`: `GET /user/examples/named-native-query?emailDomain=example.com`
 - `Criteria API`: `GET /user/examples/criteria?usernamePrefix=seed-user&status=1&emailDomain=example.com`
 
-Esses exemplos estão implementados em [User.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/User.java), [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/UserRepository.java) e [UserResource.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/UserResource.java).
+Esses exemplos estão implementados em [User.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/User.java), [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java) e [UserResource.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/resources/UserResource.java).
 
 ## Qualidade e testes
 
