@@ -171,7 +171,6 @@ Trade-off:
 
 ### Phase 3 - Lean Maturity (when needed)
 
-- Flyway/Liquibase for schema governance
 - CI pipeline with quality gates and coverage report
 - Observability evolutions according to operational needs
 
