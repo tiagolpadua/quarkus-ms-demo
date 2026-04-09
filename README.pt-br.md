@@ -9,169 +9,217 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=tiagolpadua_quarkus-ms-demo&metric=security_rating)](https://sonarcloud.io/project/overview?id=tiagolpadua_quarkus-ms-demo)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=tiagolpadua_quarkus-ms-demo&metric=sqale_rating)](https://sonarcloud.io/project/overview?id=tiagolpadua_quarkus-ms-demo)
 
-Também disponível em: [English](README.md) · [Español](README.es.md)
+Tambem disponivel em: [English](README.md) · [Espanol](README.es.md)
 
-API REST educacional construída com **Java 21 + Quarkus 3.x**, inspirada no contrato Swagger Petstore. O objetivo é demonstrar boas práticas de arquitetura em camadas, persistência, observabilidade e testes em uma API REST moderna.
+## Sumario
 
-> Este projeto é educacional e não aborda segurança de produção (autenticação, autorização ou hardening).
+- [Introducao](#introducao)
+- [Visao Geral da Arquitetura](#visao-geral-da-arquitetura)
+- [APIs e Capacidades](#apis-e-capacidades)
+- [Execucao Local via Docker Compose](#execucao-local-via-docker-compose)
+- [Execucao em Modo Desenvolvimento](#execucao-em-modo-desenvolvimento)
+- [Testes e Cobertura](#testes-e-cobertura)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Observabilidade e Tracing](#observabilidade-e-tracing)
+- [Comandos Uteis](#comandos-uteis)
+- [Licenca](#licenca)
 
-## Licença
+## Introducao
 
-Licença MIT. Consulte o arquivo [LICENSE](LICENSE).
+Este projeto e uma API de exemplo em Quarkus inspirada no contrato Swagger Petstore.
+Ele demonstra organizacao por dominio, design em camadas, tratamento de erros com RFC 7807,
+observabilidade e verificacoes automatizadas de qualidade em um unico servico Java 21.
 
----
+Este projeto **NAO** e um sistema de microservicos com multiplos repositorios.
+Ele e uma **aplicacao Quarkus unica** com multiplos dominios de negocio (`pet`, `store`, `user`).
 
-## Estrutura de Pacotes
+Este projeto tambem **NAO** e um template pronto para producao.
+Ele e uma base educacional/profissional focada em clareza e manutenibilidade.
 
-O projeto segue uma organização por domínio com separação explícita de responsabilidades em camadas:
+## Visao Geral da Arquitetura
+
+A aplicacao e organizada por dominio e internamente em camadas:
+
+- Camada Resource: endpoints HTTP e tratamento de request/response
+- Camada Service: regras de negocio
+- Camada Persistence: entidades JPA e repositorios
+- Camada Shared: envelopes de resposta, modelos de paginacao e filtro de correlacao/log
+
+```mermaid
+flowchart LR
+  Client -->|HTTP| Resource[Resources]
+  Resource --> Service[Services]
+  Service --> Repo[Repositories]
+  Repo --> DB[(H2 Database)]
+  Client -->|X-Request-Id| Resource
+  Resource -->|metrics/traces/logs| Obs[OTel + Micrometer]
+  Obs --> Collector[OpenTelemetry Collector]
+  Collector --> Jaeger[Jaeger]
+```
+
+## APIs e Capacidades
+
+- Dominio `pet`
+  - Cadastro de pets, categorias, tags, buscas por status/tags, upload de imagem
+- Dominio `store`
+  - Inventario e gestao de pedidos
+- Dominio `user`
+  - Gestao de usuarios e exemplos de query (`named-query`, `named-native-query`, `criteria`)
+
+Capacidades cross-cutting:
+
+- Erros RFC 7807 via `application/problem+json`
+- Bean Validation para payloads de entrada
+- Correlacao de requisicoes com `X-Request-Id`
+- Endpoint de metricas (`/q/metrics`)
+- OpenAPI e Swagger UI (`/q/openapi`, `/q/swagger-ui`)
+- Relatorios de cobertura via JaCoCo (`target/site/jacoco`)
+
+## Execucao Local via Docker Compose
+
+Gere o pacote da aplicacao e depois suba a stack local.
+
+```bash
+./mvnw package -DskipTests
+docker compose up
+```
+
+> [!NOTE]
+> Durante a inicializacao, podem aparecer erros transitorios de conexao ate as dependencias ficarem saudaveis.
+> Isso e esperado em orquestracao local de containers.
+
+Endpoints principais apos subir:
+
+- App: http://localhost:8080
+- Swagger UI: http://localhost:8080/q/swagger-ui
+- Health: http://localhost:8080/q/health
+- Metrics: http://localhost:8080/q/metrics
+- Jaeger UI: http://localhost:16686
+- Health do OTEL Collector: http://localhost:8888/healthz
+
+> [!TIP]
+> Se o seu ambiente nao suportar `docker compose`, tente `docker-compose`.
+
+## Execucao em Modo Desenvolvimento
+
+```bash
+./run.sh
+```
+
+Alternativa:
+
+```bash
+./mvnw quarkus:dev
+```
+
+Com o dev mode ativo:
+
+- App: http://localhost:8080
+- Dev UI: http://localhost:8080/q/dev-ui
+- Swagger UI: http://localhost:8080/q/swagger-ui
+
+## Testes e Cobertura
+
+Rode testes e validacao de formatacao:
+
+```bash
+./run-check.sh
+```
+
+Gere e abra o relatorio de cobertura:
+
+```bash
+./mvnw test
+open target/site/jacoco/index.html
+```
+
+Artefatos de cobertura gerados pelo JaCoCo:
+
+- `target/jacoco.exec`
+- `target/site/jacoco/jacoco.xml`
+- `target/site/jacoco/index.html`
+
+## Estrutura do Projeto
 
 ```text
 src/main/java/org/acme/
 ├── pet/
-│   ├── persistence/     # Entidade JPA + Repository
-│   ├── resources/       # JAX-RS Resource (controller)
-│   │   └── dtos/        # Records de entrada e saída (Request/Response)
-│   └── services/        # Lógica de negócio
-│       └── mappers/     # Conversão entidade ↔ DTO via MapStruct
-├── store/               # Mesmo padrão do pet
-├── user/                # Mesmo padrão do pet
+│   ├── persistence/
+│   ├── resources/
+│   │   └── dtos/
+│   └── services/
+│       └── mappers/
+├── store/
+│   ├── persistence/
+│   ├── resources/
+│   │   └── dtos/
+│   └── services/
+│       └── mappers/
+├── user/
+│   ├── persistence/
+│   ├── resources/
+│   │   └── dtos/
+│   └── services/
+│       └── mappers/
 └── shared/
-    ├── ApiResponse.java         # Envelope genérico de resposta
-    ├── ListResponse.java        # Envelope para listas simples
-    ├── LoggingFilter.java       # Filtro JAX-RS: logs e X-Request-Id
-    └── pagination/              # PagedResponse, PageMetadata, SortMetadata
+    ├── ApiResponse.java
+    ├── ListResponse.java
+    ├── LoggingFilter.java
+    └── pagination/
 ```
 
-Cada domínio (`pet`, `store`, `user`) é autocontido. A camada `shared` concentra os contratos de resposta reutilizáveis e os filtros transversais.
+Testes:
 
----
-
-## Formato de Respostas para Listas
-
-O projeto padroniza dois envelopes para retorno de coleções:
-
-**Lista simples** — sem paginação:
-
-```json
-{
-  "items": [ ... ]
-}
+```text
+src/test/java/org/acme/
+├── pet/resources/
+├── store/resources/
+├── user/resources/
+└── rest/json/
 ```
 
-**Lista paginada** — com metadados de página e ordenação:
+## Observabilidade e Tracing
 
-```json
-{
-  "items": [ ... ],
-  "page": {
-    "number": 0,
-    "size": 10,
-    "totalElements": 42,
-    "totalPages": 5,
-    "first": true,
-    "last": false,
-    "hasNext": true,
-    "hasPrevious": false
-  },
-  "sort": {
-    "by": "username",
-    "direction": "ASC"
-  }
-}
-```
+A aplicacao emite logs com dados de correlacao e exporta traces com OpenTelemetry.
+No Docker Compose, os traces passam pelo collector e chegam ao Jaeger.
 
-Nunca retorne arrays puros no corpo da resposta. Sempre use `ListResponse<T>` ou `PagedResponse<T>` da camada `shared`.
+Fluxo rapido:
 
----
+1. Suba a stack com `docker compose up`
+2. Execute chamadas de API (por exemplo, criar e buscar um pet)
+3. Abra o Jaeger em http://localhost:16686
+4. Selecione o servico `quarkus-ms-demo` e busque traces
+5. Inspecione spans para fluxo da requisicao e tempos
 
-## Persistência
+## Comandos Uteis
 
-- Banco H2 in-memory (`jdbc:h2:mem:default`), recriado a cada boot (`drop-and-create`)
-- Dados iniciais carregados por [import.sql](src/main/resources/import.sql)
-- Queries JPA obrigatoriamente via `@NamedQuery`, `@NamedNativeQuery` ou Criteria API — nunca `createQuery` com strings JPQL inline
-- O domínio `user` contém exemplos explícitos das três abordagens, acessíveis via endpoints `/user/examples/*`
-
----
-
-## Dependências e Plugins
-
-### Quarkus Extensions
-
-| Extensão | Função |
-| --- | --- |
-| [quarkus-rest](https://quarkus.io/guides/rest) + [quarkus-rest-jackson](https://quarkus.io/guides/rest-json) | Servidor REST reativo com serialização Jackson |
-| [quarkus-smallrye-openapi](https://quarkus.io/guides/openapi-swaggerui) | Geração automática do contrato OpenAPI e Swagger UI em `/q/swagger-ui` |
-| [quarkus-hibernate-orm-panache](https://quarkus.io/guides/hibernate-orm-panache) | ORM com Active Record e Repository patterns simplificados |
-| [quarkus-jdbc-h2](https://quarkus.io/guides/datasource) | Driver JDBC para banco H2 in-memory |
-| [quarkus-hibernate-validator](https://quarkus.io/guides/validation) | Bean Validation (`@NotBlank`, `@NotNull`, `@Valid`) nas requisições |
-| [quarkus-smallrye-health](https://quarkus.io/guides/smallrye-health) | Health checks em `/q/health`, `/q/health/live`, `/q/health/ready` |
-| [quarkus-micrometer](https://quarkus.io/guides/micrometer) + [quarkus-micrometer-registry-prometheus](https://quarkus.io/guides/micrometer) | Métricas de aplicação expostas em `/q/metrics` (formato Prometheus) |
-| [quarkus-info](https://quarkus.io/guides/info) | Metadados de build e git em `/q/info` |
-| [quarkus-opentelemetry](https://quarkus.io/guides/opentelemetry) | Distributed tracing via OTLP sem Java agent; correlaciona `traceId`/`spanId` nos logs |
-
-### Bibliotecas
-
-| Biblioteca | Função |
-| --- | --- |
-| [MapStruct 1.6](https://mapstruct.org/) | Geração em tempo de compilação de mappers entre entidades e DTOs |
-| [Lombok 1.18](https://projectlombok.org/) | Reduz boilerplate (`@RequiredArgsConstructor` para injeção via construtor) |
-| [quarkus-resteasy-problem](https://github.com/quarkiverse/quarkus-resteasy-problem) | Erros HTTP no formato RFC 7807 (`application/problem+json`) |
-
-### Plugins Maven
-
-| Plugin | Função |
-| --- | --- |
-| [Spotless + Google Java Format](https://github.com/diffplug/spotless) | Formatação automática do código; falha o build se o código não estiver formatado |
-| [quarkus-maven-plugin](https://quarkus.io/guides/maven-tooling) | Ciclo de vida Quarkus: `quarkus:dev`, `package`, build nativo |
-
-### Testes
-
-| Ferramenta | Função |
-| --- | --- |
-| [quarkus-junit](https://quarkus.io/guides/getting-started-testing) | `@QuarkusTest` (testes unitários/integração em JVM) e `@QuarkusIntegrationTest` (contra binário empacotado) |
-| [REST-assured](https://rest-assured.io/) | DSL fluente para testar endpoints HTTP |
-
----
-
-## Como Executar
-
-```sh
-# Dev mode (hot reload)
+```bash
+# Dev mode
 ./run.sh
 
-# Testes + validação de formatação
+# Testes + validacao de formatacao
 ./run-check.sh
 
-# Corrigir formatação automaticamente
+# Autoformatacao
 ./run-spotless-apply.sh
 
-# Build de produção
+# Build completo
 ./run-build-prod.sh
 
-# Build da imagem Docker e execução em container
+# Helper para imagem Docker/execucao
 ./run-docker.sh
+
+# Alvos Make
+make help
+make dev
+make check
+make fmt
+make build
+make docker
 ```
 
-Windows: use os equivalentes `.cmd`.
+No Windows, use os scripts equivalentes (`*.cmd`).
 
-Com a aplicação rodando:
+## Licenca
 
-- Swagger UI: `http://localhost:8080/q/swagger-ui`
-- Dev UI (H2 console): `http://localhost:8080/q/dev-ui`
-- Health: `http://localhost:8080/q/health`
-- Metrics: `http://localhost:8080/q/metrics`
-- Info: `http://localhost:8080/q/info`
-
----
-
-## Observabilidade
-
-Cada requisição recebe um `X-Request-Id` (preservado do cliente ou gerado automaticamente). Logs incluem `requestId`, `traceId`, `spanId`. Métricas de negócio (`pet_create_total`, `user_create_total`) são expostas via Micrometer.
-
-Para rodar o stack completo de observabilidade (OTEL Collector + Jaeger):
-
-```sh
-./mvnw package -DskipTests
-docker-compose up
-# Jaeger UI: http://localhost:16686
-```
+Licenca MIT. Consulte [LICENSE](LICENSE).

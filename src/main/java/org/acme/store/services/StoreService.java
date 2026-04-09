@@ -1,5 +1,7 @@
 package org.acme.store.services;
 
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.util.LinkedHashMap;
@@ -23,6 +25,7 @@ public class StoreService {
   private final PetRepository petRepository;
   private final OrderMapper mapper;
 
+  @WithSpan("StoreService.getInventory")
   public InventoryResponse getInventory() {
     Map<String, Integer> inventory = new LinkedHashMap<>();
     for (Pet pet : petRepository.listAll()) {
@@ -32,17 +35,20 @@ public class StoreService {
   }
 
   @Transactional
+  @WithSpan("StoreService.placeOrder")
   public OrderResponse placeOrder(OrderRequest orderRequest) {
     Order order = mapper.toEntity(orderRequest);
     return mapper.toResponse(orderRepository.save(order));
   }
 
-  public Optional<OrderResponse> getOrderById(Long orderId) {
+  @WithSpan("StoreService.getOrderById")
+  public Optional<OrderResponse> getOrderById(@SpanAttribute("arg.orderId") Long orderId) {
     return orderRepository.findOptionalById(orderId).map(mapper::toResponse);
   }
 
   @Transactional
-  public boolean deleteOrder(Long orderId) {
+  @WithSpan("StoreService.deleteOrder")
+  public boolean deleteOrder(@SpanAttribute("arg.orderId") Long orderId) {
     return orderRepository.delete(orderId);
   }
 }

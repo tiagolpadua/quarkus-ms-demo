@@ -1,6 +1,8 @@
 package org.acme.pet.services;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ public class PetService {
   private final PetMapper mapper;
 
   @Transactional
+  @WithSpan("PetService.add")
   public PetResponse add(PetRequest petRequest) {
     Pet createdPet = repository.save(normalize(mapper.toEntity(petRequest)));
     meterRegistry.counter("pet_create_total").increment();
@@ -30,38 +33,59 @@ public class PetService {
   }
 
   @Transactional
+  @WithSpan("PetService.update")
   public PetResponse update(PetRequest petRequest) {
     return mapper.toResponse(repository.save(normalize(mapper.toEntity(petRequest))));
   }
 
+  @WithSpan("PetService.findByStatus")
   public List<PetResponse> findByStatus(
-      List<String> statuses, Integer page, Integer size, String sortBy, String direction) {
+      @SpanAttribute("arg.statuses") List<String> statuses,
+      @SpanAttribute("arg.page") Integer page,
+      @SpanAttribute("arg.size") Integer size,
+      @SpanAttribute("arg.sortBy") String sortBy,
+      @SpanAttribute("arg.direction") String direction) {
     return mapper.toResponseList(
         repository.findByStatus(
             statuses, normalizePage(page), normalizeSize(size), sortBy, direction));
   }
 
+  @WithSpan("PetService.findByTags")
   public List<PetResponse> findByTags(
-      List<String> tags, Integer page, Integer size, String sortBy, String direction) {
+      @SpanAttribute("arg.tags") List<String> tags,
+      @SpanAttribute("arg.page") Integer page,
+      @SpanAttribute("arg.size") Integer size,
+      @SpanAttribute("arg.sortBy") String sortBy,
+      @SpanAttribute("arg.direction") String direction) {
     return mapper.toResponseList(
         repository.findByTags(tags, normalizePage(page), normalizeSize(size), sortBy, direction));
   }
 
-  public Optional<PetResponse> getById(Long petId) {
+  @WithSpan("PetService.getById")
+  public Optional<PetResponse> getById(@SpanAttribute("arg.petId") Long petId) {
     return repository.findOptionalById(petId).map(mapper::toResponse);
   }
 
   @Transactional
-  public Optional<PetResponse> updateWithForm(Long petId, String name, String status) {
+  @WithSpan("PetService.updateWithForm")
+  public Optional<PetResponse> updateWithForm(
+      @SpanAttribute("arg.petId") Long petId,
+      @SpanAttribute("arg.name") String name,
+      @SpanAttribute("arg.status") String status) {
     return repository.updatePartial(petId, name, status).map(mapper::toResponse);
   }
 
   @Transactional
-  public boolean delete(Long petId) {
+  @WithSpan("PetService.delete")
+  public boolean delete(@SpanAttribute("arg.petId") Long petId) {
     return repository.delete(petId);
   }
 
-  public ApiResponse uploadImage(Long petId, String additionalMetadata, String fileName) {
+  @WithSpan("PetService.uploadImage")
+  public ApiResponse uploadImage(
+      @SpanAttribute("arg.petId") Long petId,
+      @SpanAttribute("arg.additionalMetadata") String additionalMetadata,
+      @SpanAttribute("arg.fileName") String fileName) {
     int code = repository.findOptionalById(petId).isPresent() ? 200 : 404;
     return new ApiResponse(
         code,
