@@ -10,10 +10,10 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class UserResourceTest {
+class UserResourceTest {
 
   @Test
-  public void testUserOperations() {
+  void testUserOperations() {
     given().when().get("/user").then().statusCode(200).body("$.size()", greaterThanOrEqualTo(2));
 
     given()
@@ -138,7 +138,7 @@ public class UserResourceTest {
   }
 
   @Test
-  public void testUserValidation() {
+  void testUserValidation() {
     given()
         .contentType(ContentType.JSON)
         .body(
@@ -160,7 +160,7 @@ public class UserResourceTest {
   }
 
   @Test
-  public void testUserListPaginationAndOrdering() {
+  void testUserListPaginationAndOrdering() {
     given()
         .queryParam("page", 0)
         .queryParam("size", 1)

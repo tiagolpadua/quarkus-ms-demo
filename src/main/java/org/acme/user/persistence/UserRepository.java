@@ -13,15 +13,17 @@ import java.util.Set;
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {
 
+  private static final String USERNAME = "username";
+  private static final String USER_STATUS = "userStatus";
   private static final Set<String> ALLOWED_SORT_FIELDS =
-      Set.of("id", "username", "firstName", "lastName", "email", "userStatus");
+      Set.of("id", USERNAME, "firstName", "lastName", "email", USER_STATUS);
 
   public Optional<User> findByUsername(String username) {
-    return find("username", username).firstResultOptional();
+    return find(USERNAME, username).firstResultOptional();
   }
 
   public boolean deleteByUsername(String username) {
-    return delete("username", username) > 0;
+    return delete(USERNAME, username) > 0;
   }
 
   public List<User> listPaged(int page, int size, String sortBy, String direction) {
@@ -33,7 +35,7 @@ public class UserRepository implements PanacheRepository<User> {
   public List<User> findByStatusNamedQuery(Integer userStatus) {
     return getEntityManager()
         .createNamedQuery("User.findByStatusNamed", User.class)
-        .setParameter("userStatus", userStatus)
+        .setParameter(USER_STATUS, userStatus)
         .getResultList();
   }
 
@@ -52,10 +54,10 @@ public class UserRepository implements PanacheRepository<User> {
     List<Predicate> predicates = new ArrayList<>();
 
     if (usernamePrefix != null && !usernamePrefix.isBlank()) {
-      predicates.add(builder.like(root.get("username"), usernamePrefix + "%"));
+      predicates.add(builder.like(root.get(USERNAME), usernamePrefix + "%"));
     }
     if (userStatus != null) {
-      predicates.add(builder.equal(root.get("userStatus"), userStatus));
+      predicates.add(builder.equal(root.get(USER_STATUS), userStatus));
     }
     if (emailDomainFragment != null && !emailDomainFragment.isBlank()) {
       predicates.add(
@@ -66,13 +68,13 @@ public class UserRepository implements PanacheRepository<User> {
     query
         .select(root)
         .where(predicates.toArray(Predicate[]::new))
-        .orderBy(builder.asc(root.get("username")));
+        .orderBy(builder.asc(root.get(USERNAME)));
     return getEntityManager().createQuery(query).getResultList();
   }
 
   private String sanitizeSortField(String sortBy) {
     if (sortBy == null || !ALLOWED_SORT_FIELDS.contains(sortBy)) {
-      return "username";
+      return USERNAME;
     }
     return sortBy;
   }

@@ -11,10 +11,10 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class PetResourceTest {
+class PetResourceTest {
 
   @Test
-  public void testCreateAndQueryPetLifecycle() {
+  void testCreateAndQueryPetLifecycle() {
     Number petIdValue =
         given()
             .contentType(ContentType.JSON)
@@ -111,7 +111,7 @@ public class PetResourceTest {
   }
 
   @Test
-  public void testPetValidation() {
+  void testPetValidation() {
     given()
         .contentType(ContentType.JSON)
         .body(

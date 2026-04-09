@@ -7,10 +7,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class OpenApiResourceTest {
+class OpenApiResourceTest {
 
   @Test
-  public void testOpenApiDocument() {
+  void testOpenApiDocument() {
     given()
         .when()
         .get("/q/openapi")
@@ -24,7 +24,7 @@ public class OpenApiResourceTest {
   }
 
   @Test
-  public void testSwaggerUi() {
+  void testSwaggerUi() {
     given()
         .when()
         .get("/q/swagger-ui/")

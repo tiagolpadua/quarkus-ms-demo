@@ -89,6 +89,6 @@ public class PetService {
   }
 
   private int normalizeSize(Integer size) {
-    return size == null ? 20 : Math.max(1, Math.min(size, 100));
+    return size == null ? 20 : Math.clamp(size, 1, 100);
   }
 }

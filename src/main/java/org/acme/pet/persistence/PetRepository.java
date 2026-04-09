@@ -13,6 +13,7 @@ public class PetRepository implements PanacheRepository<Pet> {
 
   private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "name", "status");
 
+  @Override
   public List<Pet> listAll() {
     return findAll().list();
   }

@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class StoreResourceTest {
+class StoreResourceTest {
 
   @Test
-  public void testInventoryAndOrderLifecycle() {
+  void testInventoryAndOrderLifecycle() {
     given()
         .when()
         .get("/store/inventory")
@@ -63,7 +63,7 @@ public class StoreResourceTest {
   }
 
   @Test
-  public void testOrderValidation() {
+  void testOrderValidation() {
     given()
         .contentType(ContentType.JSON)
         .body(
@@ -84,7 +84,7 @@ public class StoreResourceTest {
   }
 
   @Test
-  public void testOrderRejectsInvalidShipDateFormat() {
+  void testOrderRejectsInvalidShipDateFormat() {
     given()
         .contentType(ContentType.JSON)
         .body(
@@ -104,7 +104,7 @@ public class StoreResourceTest {
   }
 
   @Test
-  public void testDeleteNonExistingOrderReturnsNotFound() {
+  void testDeleteNonExistingOrderReturnsNotFound() {
     given()
         .when()
         .delete("/store/order/999999")
@@ -114,7 +114,7 @@ public class StoreResourceTest {
   }
 
   @Test
-  public void testConcurrentOrderCreation() {
+  void testConcurrentOrderCreation() {
     List<CompletableFuture<Integer>> requests =
         List.of(
             createOrderAsync("2026-04-10T10:00:00Z"),
