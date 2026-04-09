@@ -17,9 +17,10 @@ public class OpenApiResourceTest {
         .then()
         .statusCode(200)
         .body(containsString("openapi: 3."))
-        .body(containsString("title: Quarkus MS Demo API"))
-        .body(containsString("/fruits"))
-        .body(containsString("/legumes"));
+        .body(containsString("title: Swagger Petstore"))
+        .body(containsString("/pet"))
+        .body(containsString("/store"))
+        .body(containsString("/user"));
   }
 
   @Test

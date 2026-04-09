@@ -1,1 +1,3 @@
-./mvnw test spotless:apply
+#!/usr/bin/env sh
+
+./mvnw test spotless:check

@@ -1,4 +1,4 @@
-package org.acme.rest.json;
+package org.acme.shared;
 
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -19,7 +19,6 @@ public class LoggingFilter implements ContainerRequestFilter {
 
   @Override
   public void filter(ContainerRequestContext context) {
-
     final String method = context.getMethod();
     final String path = info.getPath();
     final String address = request.remoteAddress().toString();
