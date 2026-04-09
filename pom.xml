@@ -7,6 +7,13 @@
   <artifactId>quarkus-ms-demo</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>quarkus</packaging>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/license/mit</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <properties>
     <quarkus.resteasy.problem.version>3.32.1</quarkus.resteasy.problem.version>
     <spotless.version>2.44.4</spotless.version>

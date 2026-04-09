@@ -11,6 +11,10 @@
 
 API REST em Quarkus inspirada no contrato do Swagger Petstore, organizada em camadas simples para facilitar estudo, evolução e testes.
 
+## Licença
+
+Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE).
+
 ## Escopo didático
 
 - Este projeto é didático e não entra no mérito de segurança de produção (autenticação, autorização e hardening).
