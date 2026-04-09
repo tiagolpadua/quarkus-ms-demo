@@ -1,4 +1,4 @@
-package org.acme.store;
+package org.acme.store.resources;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.acme.store.dtos.OrderRequest;
 import org.acme.store.dtos.OrderResponse;
 import org.acme.store.mappers.OrderMapper;
+import org.acme.store.services.StoreService;
 
 @Path("/store")
 @Produces(MediaType.APPLICATION_JSON)

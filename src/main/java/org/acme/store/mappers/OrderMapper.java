@@ -1,9 +1,9 @@
 package org.acme.store.mappers;
 
 import java.util.List;
-import org.acme.store.Order;
 import org.acme.store.dtos.OrderRequest;
 import org.acme.store.dtos.OrderResponse;
+import org.acme.store.persistence.Order;
 
 public final class OrderMapper {
 

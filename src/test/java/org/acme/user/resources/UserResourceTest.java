@@ -1,4 +1,4 @@
-package org.acme.rest.json;
+package org.acme.user.resources;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -40,6 +40,33 @@ public class UserResourceTest {
         .then()
         .statusCode(200)
         .body("firstName", is("User"), "email", is("user1@example.com"));
+
+    given()
+        .queryParam("status", 1)
+        .when()
+        .get("/user/examples/named-query")
+        .then()
+        .statusCode(200)
+        .body("username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2", "user1"));
+
+    given()
+        .queryParam("emailDomain", "example.com")
+        .when()
+        .get("/user/examples/named-native-query")
+        .then()
+        .statusCode(200)
+        .body("username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2", "user1"));
+
+    given()
+        .queryParam("usernamePrefix", "seed-user")
+        .queryParam("status", 1)
+        .queryParam("emailDomain", "example.com")
+        .when()
+        .get("/user/examples/criteria")
+        .then()
+        .statusCode(200)
+        .body("$.size()", is(2))
+        .body("username", org.hamcrest.Matchers.hasItems("seed-user-1", "seed-user-2"));
 
     given()
         .contentType(ContentType.JSON)

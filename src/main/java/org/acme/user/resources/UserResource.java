@@ -1,4 +1,4 @@
-package org.acme.user;
+package org.acme.user.resources;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -9,12 +9,14 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.acme.user.dtos.UserRequest;
 import org.acme.user.dtos.UserResponse;
+import org.acme.user.services.UserService;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -27,6 +29,27 @@ public class UserResource {
   @GET
   public List<UserResponse> list() {
     return service.list();
+  }
+
+  @GET
+  @Path("/examples/named-query")
+  public List<UserResponse> listByNamedQuery(@QueryParam("status") Integer userStatus) {
+    return service.listByStatusNamedQuery(userStatus);
+  }
+
+  @GET
+  @Path("/examples/named-native-query")
+  public List<UserResponse> listByNamedNativeQuery(@QueryParam("emailDomain") String emailDomain) {
+    return service.listByEmailDomainNativeQuery(emailDomain);
+  }
+
+  @GET
+  @Path("/examples/criteria")
+  public List<UserResponse> listByCriteria(
+      @QueryParam("usernamePrefix") String usernamePrefix,
+      @QueryParam("status") Integer userStatus,
+      @QueryParam("emailDomain") String emailDomain) {
+    return service.listByCriteria(usernamePrefix, userStatus, emailDomain);
   }
 
   @POST

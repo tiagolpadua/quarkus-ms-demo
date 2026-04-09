@@ -1,4 +1,4 @@
-package org.acme.rest.json;
+package org.acme.user.resources;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

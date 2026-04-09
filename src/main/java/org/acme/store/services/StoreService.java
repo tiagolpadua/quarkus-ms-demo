@@ -1,4 +1,4 @@
-package org.acme.store;
+package org.acme.store.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.LinkedHashMap;
@@ -7,6 +7,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.acme.pet.persistence.Pet;
 import org.acme.pet.persistence.PetRepository;
+import org.acme.store.persistence.Order;
+import org.acme.store.persistence.OrderRepository;
 
 @ApplicationScoped
 @RequiredArgsConstructor

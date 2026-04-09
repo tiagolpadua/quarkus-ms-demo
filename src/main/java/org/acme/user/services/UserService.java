@@ -1,4 +1,4 @@
-package org.acme.user;
+package org.acme.user.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -7,6 +7,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.acme.user.dtos.UserRequest;
 import org.acme.user.dtos.UserResponse;
+import org.acme.user.mappers.UserMapper;
+import org.acme.user.persistence.User;
+import org.acme.user.persistence.UserRepository;
 
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -48,5 +51,19 @@ public class UserService {
 
   public List<UserResponse> list() {
     return UserMapper.toResponseList(repository.listAll());
+  }
+
+  public List<UserResponse> listByStatusNamedQuery(Integer userStatus) {
+    return UserMapper.toResponseList(repository.findByStatusNamedQuery(userStatus));
+  }
+
+  public List<UserResponse> listByEmailDomainNativeQuery(String emailDomain) {
+    return UserMapper.toResponseList(repository.findByEmailDomainNativeQuery(emailDomain));
+  }
+
+  public List<UserResponse> listByCriteria(
+      String usernamePrefix, Integer userStatus, String emailDomainFragment) {
+    return UserMapper.toResponseList(
+        repository.findByCriteria(usernamePrefix, userStatus, emailDomainFragment));
   }
 }

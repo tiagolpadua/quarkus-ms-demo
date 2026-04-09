@@ -1,8 +1,9 @@
-package org.acme.user;
+package org.acme.user.mappers;
 
 import java.util.List;
 import org.acme.user.dtos.UserRequest;
 import org.acme.user.dtos.UserResponse;
+import org.acme.user.persistence.User;
 
 public final class UserMapper {
 

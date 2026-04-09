@@ -1,10 +1,12 @@
-package org.acme.user;
+package org.acme.user.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -13,6 +15,15 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "pet_user")
+@NamedQuery(
+    name = "User.findByStatusNamed",
+    query = "select u from User u where u.userStatus = :userStatus order by u.username")
+@NamedNativeQuery(
+    name = "User.findByEmailDomainNative",
+    query =
+        "select id, username, firstName, lastName, email, phone, userStatus "
+            + "from pet_user where lower(email) like concat('%', :emailDomain) order by username",
+    resultClass = User.class)
 @Getter
 @Setter
 @NoArgsConstructor

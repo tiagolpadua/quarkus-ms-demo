@@ -104,6 +104,9 @@ Boas práticas adotadas:
 ### User
 
 - `GET /user`
+- `GET /user/examples/named-query?status=1`
+- `GET /user/examples/named-native-query?emailDomain=example.com`
+- `GET /user/examples/criteria?usernamePrefix=seed-user&status=1&emailDomain=example.com`
 - `POST /user`
 - `POST /user/createWithArray`
 - `POST /user/createWithList`
@@ -131,20 +134,41 @@ Os domínios `pet`, `store` e `user` usam H2 em memória com schema recriado a c
 src/main/java/org/acme
 ├── pet
 │   ├── dtos
+│   ├── mappers
 │   ├── persistence
 │   ├── resources
 │   └── services
 ├── store
+│   ├── dtos
+│   ├── mappers
+│   ├── persistence
+│   ├── resources
+│   └── services
 ├── user
+│   ├── dtos
+│   ├── mappers
+│   ├── persistence
+│   ├── resources
+│   └── services
 └── shared
 ```
 
 Resumo por pacote:
 
 - `pet`: separação explícita entre recurso HTTP, serviço, DTOs e persistência JPA
-- `store`: fluxo de pedidos, inventário e persistência JPA
-- `user`: entidade JPA, repositório Panache, serviço e recurso REST
+- `store`: segue a mesma organização de `pet`, com DTOs, mappers, persistência, resources e services
+- `user`: segue a mesma organização de `pet`, com DTOs, mappers, persistência, resources e services
 - `shared`: filtros e componentes transversais, como logging de requests
+
+## Exemplos de acesso ao banco
+
+Além do uso de Panache, o projeto também contém exemplos explícitos de outras abordagens JPA no domínio `user`:
+
+- `NamedQuery`: `GET /user/examples/named-query?status=1`
+- `NamedNativeQuery`: `GET /user/examples/named-native-query?emailDomain=example.com`
+- `Criteria API`: `GET /user/examples/criteria?usernamePrefix=seed-user&status=1&emailDomain=example.com`
+
+Esses exemplos estão implementados em [User.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/User.java), [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/UserRepository.java) e [UserResource.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/UserResource.java).
 
 ## Qualidade e testes
 
