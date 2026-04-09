@@ -15,7 +15,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.acme.pet.persistence.Pet;
+import org.acme.pet.dtos.PetRequest;
+import org.acme.pet.dtos.PetResponse;
+import org.acme.pet.mappers.PetMapper;
 import org.acme.pet.services.PetService;
 import org.acme.shared.ApiResponse;
 
@@ -28,26 +30,26 @@ public class PetResource {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public Pet add(Pet pet) {
-    return service.add(pet);
+  public PetResponse add(PetRequest pet) {
+    return PetMapper.toResponse(service.add(PetMapper.toEntity(pet)));
   }
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Pet update(Pet pet) {
-    return service.update(pet);
+  public PetResponse update(PetRequest pet) {
+    return PetMapper.toResponse(service.update(PetMapper.toEntity(pet)));
   }
 
   @GET
   @Path("/findByStatus")
-  public List<Pet> findByStatus(@QueryParam("status") List<String> statuses) {
-    return service.findByStatus(statuses);
+  public List<PetResponse> findByStatus(@QueryParam("status") List<String> statuses) {
+    return PetMapper.toResponseList(service.findByStatus(statuses));
   }
 
   @GET
   @Path("/findByTags")
-  public List<Pet> findByTags(@QueryParam("tags") List<String> tags) {
-    return service.findByTags(tags);
+  public List<PetResponse> findByTags(@QueryParam("tags") List<String> tags) {
+    return PetMapper.toResponseList(service.findByTags(tags));
   }
 
   @GET
@@ -55,7 +57,7 @@ public class PetResource {
   public Response getById(@PathParam("petId") Long petId) {
     return service
         .getById(petId)
-        .map(pet -> Response.ok(pet).build())
+        .map(pet -> Response.ok(PetMapper.toResponse(pet)).build())
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 
@@ -68,7 +70,7 @@ public class PetResource {
       @FormParam("status") String status) {
     return service
         .updateWithForm(petId, name, status)
-        .map(pet -> Response.ok(pet).build())
+        .map(pet -> Response.ok(PetMapper.toResponse(pet)).build())
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 

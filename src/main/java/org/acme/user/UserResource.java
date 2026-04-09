@@ -12,7 +12,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.acme.user.dtos.UserDto;
+import org.acme.user.dtos.UserRequest;
+import org.acme.user.dtos.UserResponse;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,28 +24,25 @@ public class UserResource {
   private final UserService service;
 
   @GET
-  public List<UserDto> list() {
+  public List<UserResponse> list() {
     return service.list();
   }
 
   @POST
-  public Response create(UserDto user) {
-    service.create(user);
-    return Response.ok().build();
+  public UserResponse create(UserRequest user) {
+    return service.create(user);
   }
 
   @POST
   @Path("/createWithArray")
-  public Response createWithArray(List<UserDto> users) {
-    service.createMany(users);
-    return Response.ok().build();
+  public List<UserResponse> createWithArray(List<UserRequest> users) {
+    return service.createMany(users);
   }
 
   @POST
   @Path("/createWithList")
-  public Response createWithList(List<UserDto> users) {
-    service.createMany(users);
-    return Response.ok().build();
+  public List<UserResponse> createWithList(List<UserRequest> users) {
+    return service.createMany(users);
   }
 
   @GET
@@ -58,7 +56,7 @@ public class UserResource {
 
   @PUT
   @Path("/{username}")
-  public Response update(@PathParam("username") String username, UserDto user) {
+  public Response update(@PathParam("username") String username, UserRequest user) {
     return service
         .update(username, user)
         .map(updatedUser -> Response.ok(updatedUser).build())

@@ -11,6 +11,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.acme.store.dtos.OrderRequest;
+import org.acme.store.dtos.OrderResponse;
+import org.acme.store.mappers.OrderMapper;
 
 @Path("/store")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,8 +31,8 @@ public class StoreResource {
 
   @POST
   @Path("/order")
-  public Order placeOrder(Order order) {
-    return service.placeOrder(order);
+  public OrderResponse placeOrder(OrderRequest order) {
+    return OrderMapper.toResponse(service.placeOrder(OrderMapper.toEntity(order)));
   }
 
   @GET
@@ -37,7 +40,7 @@ public class StoreResource {
   public Response getOrderById(@PathParam("orderId") Long orderId) {
     return service
         .getOrderById(orderId)
-        .map(order -> Response.ok(order).build())
+        .map(order -> Response.ok(OrderMapper.toResponse(order)).build())
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 

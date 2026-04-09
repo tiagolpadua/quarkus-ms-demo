@@ -4,41 +4,40 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.acme.user.dtos.UserDto;
+import org.acme.user.dtos.UserRequest;
+import org.acme.user.dtos.UserResponse;
 
 @ApplicationScoped
 @RequiredArgsConstructor
 public class UserService {
 
   private final UserRepository repository;
-  private final UserMapper mapper;
 
   @Transactional
-  public void create(UserDto userDto) {
-    repository.persist(mapper.toEntity(userDto));
+  public UserResponse create(UserRequest userRequest) {
+    User user = UserMapper.toEntity(userRequest);
+    repository.persist(user);
+    return UserMapper.toResponse(user);
   }
 
   @Transactional
-  public void createMany(List<UserDto> users) {
-    for (UserDto userDto : users) {
-      create(userDto);
-    }
+  public List<UserResponse> createMany(List<UserRequest> users) {
+    return users.stream().map(this::create).toList();
   }
 
-  public Optional<UserDto> getByUsername(String username) {
-    return repository.findByUsername(username).map(mapper::toDto);
+  public Optional<UserResponse> getByUsername(String username) {
+    return repository.findByUsername(username).map(UserMapper::toResponse);
   }
 
   @Transactional
-  public Optional<UserDto> update(String username, UserDto userDto) {
+  public Optional<UserResponse> update(String username, UserRequest userRequest) {
     return repository
         .findByUsername(username)
         .map(
             user -> {
-              mapper.updateEntity(userDto, user);
-              return mapper.toDto(user);
+              UserMapper.updateEntity(userRequest, user);
+              return UserMapper.toResponse(user);
             });
   }
 
@@ -47,7 +46,7 @@ public class UserService {
     return repository.deleteByUsername(username);
   }
 
-  public List<UserDto> list() {
-    return repository.listAll().stream().map(mapper::toDto).collect(Collectors.toList());
+  public List<UserResponse> list() {
+    return UserMapper.toResponseList(repository.listAll());
   }
 }

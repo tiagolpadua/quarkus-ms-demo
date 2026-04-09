@@ -1,6 +1,6 @@
 package org.acme.user.dtos;
 
-public record UserDto(
+public record UserRequest(
     Long id,
     String username,
     String firstName,
