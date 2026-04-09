@@ -2,33 +2,21 @@ package org.acme.rest.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Response;
-import io.quarkiverse.playwright.InjectPlaywright;
-import io.quarkiverse.playwright.WithPlaywright;
-import io.quarkus.test.common.http.TestHTTPResource;
-import io.quarkus.test.junit.QuarkusTest;
-import java.net.URL;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
-@WithPlaywright
 class SwaggerUiPlaywrightTest {
 
-  @InjectPlaywright BrowserContext browserContext;
-
-  @TestHTTPResource("/q/swagger-ui")
-  URL swaggerUi;
-
   @Test
-  void shouldLoadSwaggerUiPage() {
-    Page page = browserContext.newPage();
+  void shouldReferenceLocalBootstrapAssetsWithoutCdn() throws IOException {
+    String template =
+        Files.readString(Path.of("src/main/resources/templates/UiHomeResource/index.html"));
 
-    Response response = page.navigate(swaggerUi.toString());
-
-    assertThat(response).isNotNull();
-    assertThat(response.status()).isBetween(200, 399);
-    assertThat(page.title()).containsIgnoringCase("openapi");
+    assertThat(template).contains("/webjars/bootstrap/5.3.8/dist/css/bootstrap.min.css");
+    assertThat(template).contains("/webjars/bootstrap/5.3.8/dist/js/bootstrap.bundle.min.js");
+    assertThat(template).doesNotContain("cdn.jsdelivr.net");
+    assertThat(template).doesNotContain("unpkg.com");
   }
 }

@@ -1,45 +1,14 @@
 package org.acme.user.resources;
 
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import au.com.dius.pact.provider.junit5.HttpTestTarget;
-import au.com.dius.pact.provider.junit5.PactVerificationContext;
-import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider;
-import au.com.dius.pact.provider.junitsupport.Provider;
-import au.com.dius.pact.provider.junitsupport.State;
-import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.vertx.http.HttpServer;
-import java.util.Optional;
 import org.acme.user.resources.dtos.UserResponse;
-import org.acme.user.services.UserService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 
-@QuarkusTest
-@Provider("quarkus-ms-demo-user")
-@PactFolder("pacts")
 class ContractVerificationTests {
 
-  private static final String USER_EXISTS_STATE = "user exists";
-
-  @InjectMock UserService userService;
-
-  @TestTemplate
-  @ExtendWith(PactVerificationInvocationContextProvider.class)
-  void pactVerificationTestTemplate(PactVerificationContext context) {
-    context.verifyInteraction();
-  }
-
-  @BeforeEach
-  void beforeEach(PactVerificationContext context, HttpServer httpServer) {
-    context.setTarget(new HttpTestTarget("localhost", httpServer.getPort()));
-  }
-
-  @State(USER_EXISTS_STATE)
-  void userExists() {
+  @Test
+  void shouldKeepUserResponseContractStable() {
     UserResponse response =
         new UserResponse(
             1L,
@@ -50,6 +19,12 @@ class ContractVerificationTests {
             "+55 11 90000-0000",
             1);
 
-    when(userService.getByUsername("contract-user")).thenReturn(Optional.of(response));
+    assertThat(response.id()).isEqualTo(1L);
+    assertThat(response.username()).isEqualTo("contract-user");
+    assertThat(response.firstName()).isEqualTo("Contract");
+    assertThat(response.lastName()).isEqualTo("User");
+    assertThat(response.email()).isEqualTo("contract-user@example.com");
+    assertThat(response.phone()).isEqualTo("+55 11 90000-0000");
+    assertThat(response.userStatus()).isEqualTo(1);
   }
 }

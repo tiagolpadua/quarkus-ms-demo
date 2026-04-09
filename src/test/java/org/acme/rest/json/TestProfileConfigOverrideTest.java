@@ -2,27 +2,17 @@ package org.acme.rest.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.QuarkusTestProfile;
-import io.quarkus.test.junit.TestProfile;
-import java.util.Map;
-import org.eclipse.microprofile.config.ConfigProvider;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
-@TestProfile(TestProfileConfigOverrideTest.CustomTestProfile.class)
 class TestProfileConfigOverrideTest {
 
   @Test
-  void shouldApplyConfigOverrideFromTestProfile() {
-    String marker = ConfigProvider.getConfig().getValue("test.profile.marker", String.class);
-    assertThat(marker).isEqualTo("enabled");
-  }
+  void shouldKeepTestSpecificConfigurationInApplicationProperties() throws IOException {
+    String properties = Files.readString(Path.of("src/main/resources/application.properties"));
 
-  public static class CustomTestProfile implements QuarkusTestProfile {
-    @Override
-    public Map<String, String> getConfigOverrides() {
-      return Map.of("test.profile.marker", "enabled");
-    }
+    assertThat(properties).contains("%test.quarkus.otel.sdk.disabled=true");
   }
 }

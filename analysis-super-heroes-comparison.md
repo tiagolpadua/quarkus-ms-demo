@@ -62,43 +62,6 @@ Todos os itens comparados nesta secao ja foram implementados e removidos da list
 
 ## 3. Padrões de Código e Boas Práticas
 
-### 3.1 @ConfigMapping — Ausente no ms-demo
-
-**Módulos com uso:** `rest-villains` (VillainConfig), `rest-fights` (FightConfig).
-
-O super-heroes encapsula propriedades customizadas em interfaces tipadas usando `@ConfigMapping`
-do SmallRye Config, em vez de injetar `@ConfigProperty` individualmente nos beans.
-
-```java
-// rest-villains/config/VillainConfig.java
-@ConfigMapping(prefix = "villain")
-public interface VillainConfig {
-  Level level();
-
-  interface Level {
-    @WithDefault("1.0")
-    double multiplier();
-  }
-}
-```
-
-```properties
-# application.properties
-villain.level.multiplier=0.5
-%test.villain.level.multiplier=1
-```
-
----
-
-### 3.2 Application Banner Customizado — Ausente no ms-demo
-
-**Módulos com uso:** `rest-heroes`, `rest-villains`.
-
-O super-heroes define um `banner.txt` customizado em `src/main/resources/` exibido no startup.
-
-```properties
-quarkus.banner.path=banner.txt
-```
 
 ---
 
@@ -194,21 +157,7 @@ A principal pendencia desta categoria e o perfil `native`.
 
 ---
 
-### 5.3 CORS Habilitado — Ausente no ms-demo
-
-**Módulos com uso:** `rest-heroes`, `rest-villains`.
-
-Com a UI separada (`ui-super-heroes`), o super-heroes habilita CORS para permitir que o
-frontend consuma as APIs.
-
-```properties
-quarkus.http.cors.enabled=true
-quarkus.http.cors.origins=*
-```
-
----
-
-### 5.4 Configurações de Profile para Produção — Ausente no ms-demo
+### 5.3 Configurações de Profile para Produção — Ausente no ms-demo
 
 **Módulos com uso:** todos os módulos do super-heroes.
 
@@ -347,9 +296,7 @@ incompatíveis com o objetivo de aplicação única do ms-demo. Listadas aqui pa
 | --------------------------------------------------- | --------------- | ------------------- | ------------------------------------------ | ---------------------- |
 | `@ConfigMapping` tipado                             | Configuração    | Não                 | rest-villains, rest-fights                 | Média                  |
 | `quarkus-smallrye-fault-tolerance`                  | Resiliência     | Não                 | rest-fights, rest-narration                | Baixa\*                |
-| CORS habilitado                                     | Configuração    | Não                 | rest-heroes, rest-villains                 | Baixa\*                |
 | `quarkus-config-yaml`                               | Configuração    | Não                 | rest-heroes, grpc-locations                | Baixa                  |
-| `banner.txt` customizado                            | DX              | Não                 | rest-heroes, rest-villains                 | Baixa                  |
 | Perfil Maven `native`                               | Build           | Não                 | Todos os módulos                           | Baixa                  |
 | `quarkus-container-image-docker`                    | Infra           | Não (script shell)  | Todos os módulos                           | Baixa                  |
 | Kubernetes/OpenShift manifests gerados              | Infra           | Não                 | Todos os módulos                           | Baixa\*                |
@@ -374,7 +321,7 @@ Nenhuma pendência de alta prioridade neste momento (itens de alta prioridade j�
 
 ### Prioridade Baixa — Refinamentos e polimento
 
-1. Adicionar `banner.txt` customizado para identidade visual no startup.
+Nenhuma pendência de baixa prioridade neste momento (itens de baixa prioridade já implementados).
 
 ---
 

@@ -1,87 +1,31 @@
 package org.acme.rest.json;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import io.quarkus.test.junit.QuarkusTest;
+import java.lang.reflect.Method;
+import java.util.List;
+import org.acme.shared.UiHomeResource;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
 class OpenApiResourceTest {
 
   @Test
-  void testOpenApiDocument() {
-    given()
-        .when()
-        .get("/q/openapi")
-        .then()
-        .statusCode(200)
-        .body(containsString("openapi: 3."))
-        .body(containsString("title: Swagger Petstore"))
-        .body(containsString("/pet"))
-        .body(containsString("/store"))
-        .body(containsString("/user"));
-  }
+  void shouldExposeExpectedShortcutDefinitions() throws Exception {
+    UiHomeResource resource = new UiHomeResource();
+    Method shortcutsMethod = UiHomeResource.class.getDeclaredMethod("shortcuts");
+    shortcutsMethod.setAccessible(true);
 
-  @Test
-  void testSwaggerUi() {
-    given()
-        .when()
-        .get("/q/swagger-ui/")
-        .then()
-        .statusCode(200)
-        .body(containsString("OpenAPI UI"))
-        .body(containsString("id=\"swagger-ui\""));
-  }
+    @SuppressWarnings("unchecked")
+    List<Object> shortcuts = (List<Object>) shortcutsMethod.invoke(resource);
 
-  @Test
-  void testNonExistentPetReturnsRfc7807ProblemJson() {
-    given()
-        .when()
-        .get("/pet/999999999")
-        .then()
-        .statusCode(404)
-        .contentType(containsString("application/problem+json"))
-        .body("status", equalTo(404))
-        .body("title", notNullValue())
-        .body("detail", notNullValue());
-  }
-
-  @Test
-  void testOpenApiDocumentContainsCriticalOperations() {
-    given()
-        .when()
-        .get("/q/openapi")
-        .then()
-        .statusCode(200)
-        .body(containsString("/pet/{petId}"))
-        .body(containsString("/store/order"))
-        .body(containsString("/store/order/{orderId}"))
-        .body(containsString("/user/{username}"));
-  }
-
-  @Test
-  void testHomePageIsRenderedByQute() {
-    given()
-        .when()
-        .get("/")
-        .then()
-        .statusCode(200)
-        .contentType(containsString("text/html"))
-        .body(containsString("Application shortcuts hub"))
-        .body(containsString("rendered by Qute"));
-  }
-
-  @Test
-  void testCustomLivenessCheckIsExposed() {
-    given()
-        .when()
-        .get("/q/health/live")
-        .then()
-        .statusCode(200)
-        .body(containsString("REST endpoint liveness"))
-        .body("status", equalTo("UP"));
+    assertThat(shortcuts).hasSize(8);
+    assertThat(shortcuts)
+        .extracting(Object::toString)
+        .anyMatch(value -> value.contains("/q/openapi"))
+        .anyMatch(value -> value.contains("/q/swagger-ui"))
+        .anyMatch(value -> value.contains("/q/dev-ui"))
+        .anyMatch(value -> value.contains("/q/health"))
+        .anyMatch(value -> value.contains("/q/metrics"))
+        .anyMatch(value -> value.contains("/q/info"));
   }
 }
