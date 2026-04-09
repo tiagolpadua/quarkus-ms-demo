@@ -1,10 +1,10 @@
 # Copilot Instructions
 
-This repository is a Quarkus 3 REST example built with Maven and Java 17.
+This repository is a Quarkus 3 REST example built with Maven and Java 21.
 
 ## Stack and Structure
 
-- Use Java 17 language features only.
+- Use Java 21 language features only.
 - Build and run with the Maven wrapper: `./mvnw`.
 - Main application code lives under `src/main/java/org/acme/rest/json`.
 - HTTP resources use Jakarta REST annotations and are exposed as simple Quarkus endpoints.

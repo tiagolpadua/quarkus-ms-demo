@@ -15,24 +15,25 @@ public class OrderRepository {
 
   public OrderRepository() {
     save(
-        Order.builder()
-            .id(1L)
-            .petId(1L)
-            .quantity(1)
-            .shipDate(OffsetDateTime.parse("2026-04-09T10:15:30Z").toString())
-            .status("placed")
-            .complete(false)
-            .build());
+        new Order(
+            1L, 1L, 1, OffsetDateTime.parse("2026-04-09T10:15:30Z").toString(), "placed", false));
   }
 
   public Order save(Order order) {
     Order copy = copyOf(order);
-    if (copy.getId() == null) {
-      copy.setId(sequence.incrementAndGet());
+    if (copy.id() == null) {
+      copy =
+          new Order(
+              sequence.incrementAndGet(),
+              copy.petId(),
+              copy.quantity(),
+              copy.shipDate(),
+              copy.status(),
+              copy.complete());
     } else {
-      sequence.accumulateAndGet(copy.getId(), Math::max);
+      sequence.accumulateAndGet(copy.id(), Math::max);
     }
-    orders.put(copy.getId(), copy);
+    orders.put(copy.id(), copy);
     return copyOf(copy);
   }
 
@@ -46,6 +47,12 @@ public class OrderRepository {
   }
 
   private Order copyOf(Order source) {
-    return source.toBuilder().build();
+    return new Order(
+        source.id(),
+        source.petId(),
+        source.quantity(),
+        source.shipDate(),
+        source.status(),
+        source.complete());
   }
 }

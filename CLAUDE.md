@@ -40,7 +40,7 @@ docker run -i --rm -p 8080:8080 quarkus/rest-json-quickstart
 
 ## Architecture
 
-Single Quarkus 3.x application (Java 17) demonstrating REST JSON APIs. Based on the [Quarkus REST JSON guide](https://quarkus.io/guides/rest-json).
+Single Quarkus 3.x application (Java 21) demonstrating REST JSON APIs. Based on the [Quarkus REST JSON guide](https://quarkus.io/guides/rest-json).
 
 **Endpoints:**
 - `GET/POST/DELETE /fruits` — mutable fruit collection (in-memory `LinkedHashMap`)

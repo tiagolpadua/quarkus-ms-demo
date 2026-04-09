@@ -12,10 +12,11 @@ import org.acme.user.dtos.UserData;
 public class UserService {
 
   @Inject UserRepository repository;
+  @Inject UserMapper mapper;
 
   @Transactional
   public void create(UserData userData) {
-    repository.persist(toEntity(userData, new User()));
+    repository.persist(mapper.toEntity(userData));
   }
 
   @Transactional
@@ -26,7 +27,7 @@ public class UserService {
   }
 
   public Optional<UserData> getByUsername(String username) {
-    return repository.findByUsername(username).map(this::toData);
+    return repository.findByUsername(username).map(mapper::toData);
   }
 
   @Transactional
@@ -35,13 +36,8 @@ public class UserService {
         .findByUsername(username)
         .map(
             user -> {
-              user.setUsername(userData.getUsername());
-              user.setFirstName(userData.getFirstName());
-              user.setLastName(userData.getLastName());
-              user.setEmail(userData.getEmail());
-              user.setPhone(userData.getPhone());
-              user.setUserStatus(userData.getUserStatus());
-              return toData(user);
+              mapper.updateEntity(userData, user);
+              return mapper.toData(user);
             });
   }
 
@@ -51,29 +47,6 @@ public class UserService {
   }
 
   public List<UserData> list() {
-    return repository.listAll().stream().map(this::toData).collect(Collectors.toList());
-  }
-
-  private User toEntity(UserData source, User target) {
-    target.setId(source.getId());
-    target.setUsername(source.getUsername());
-    target.setFirstName(source.getFirstName());
-    target.setLastName(source.getLastName());
-    target.setEmail(source.getEmail());
-    target.setPhone(source.getPhone());
-    target.setUserStatus(source.getUserStatus());
-    return target;
-  }
-
-  private UserData toData(User source) {
-    UserData user = new UserData();
-    user.setId(source.getId());
-    user.setUsername(source.getUsername());
-    user.setFirstName(source.getFirstName());
-    user.setLastName(source.getLastName());
-    user.setEmail(source.getEmail());
-    user.setPhone(source.getPhone());
-    user.setUserStatus(source.getUserStatus());
-    return user;
+    return repository.listAll().stream().map(mapper::toData).collect(Collectors.toList());
   }
 }

@@ -23,12 +23,13 @@ public class PetRepository {
   }
 
   public List<Pet> listAll() {
-    return new ArrayList<>(pets.values());
+    return pets.values().stream().map(this::copyOf).collect(Collectors.toList());
   }
 
   public List<Pet> findByStatus(List<String> statuses) {
     return pets.values().stream()
-        .filter(pet -> statuses.contains(pet.getStatus()))
+        .filter(pet -> statuses.contains(pet.status()))
+        .map(this::copyOf)
         .collect(Collectors.toList());
   }
 
@@ -36,23 +37,31 @@ public class PetRepository {
     return pets.values().stream()
         .filter(
             pet ->
-                pet.getTags() != null
-                    && pet.getTags().stream().map(TagData::getName).anyMatch(tagNames::contains))
+                pet.tags() != null
+                    && pet.tags().stream().map(TagData::name).anyMatch(tagNames::contains))
+        .map(this::copyOf)
         .collect(Collectors.toList());
   }
 
   public Optional<Pet> findById(Long id) {
-    return Optional.ofNullable(pets.get(id));
+    return Optional.ofNullable(pets.get(id)).map(this::copyOf);
   }
 
   public Pet save(Pet pet) {
     Pet copy = copyOf(pet);
-    if (copy.getId() == null) {
-      copy.setId(sequence.incrementAndGet());
+    if (copy.id() == null) {
+      copy =
+          new Pet(
+              sequence.incrementAndGet(),
+              copy.category(),
+              copy.name(),
+              copy.photoUrls(),
+              copy.tags(),
+              copy.status());
     } else {
-      sequence.accumulateAndGet(copy.getId(), Math::max);
+      sequence.accumulateAndGet(copy.id(), Math::max);
     }
-    pets.put(copy.getId(), copy);
+    pets.put(copy.id(), copy);
     return copyOf(copy);
   }
 
@@ -61,13 +70,16 @@ public class PetRepository {
     if (pet == null) {
       return Optional.empty();
     }
-    if (name != null && !name.isBlank()) {
-      pet.setName(name);
-    }
-    if (status != null && !status.isBlank()) {
-      pet.setStatus(status);
-    }
-    return Optional.of(copyOf(pet));
+    Pet updated =
+        new Pet(
+            pet.id(),
+            pet.category(),
+            name != null && !name.isBlank() ? name : pet.name(),
+            pet.photoUrls(),
+            pet.tags(),
+            status != null && !status.isBlank() ? status : pet.status());
+    pets.put(petId, updated);
+    return Optional.of(copyOf(updated));
   }
 
   public boolean delete(Long petId) {
@@ -76,33 +88,28 @@ public class PetRepository {
 
   private Pet seedPet(String name, String status, String categoryName, String tagName) {
     long id = sequence.incrementAndGet();
-    Pet pet = new Pet();
-    pet.setId(id);
-    pet.setCategory(new CategoryData(id, categoryName));
-    pet.setName(name);
-    pet.getPhotoUrls().add("https://example.com/" + name + ".jpg");
-    pet.getTags().add(new TagData(id, tagName));
-    pet.setStatus(status);
-    return pet;
+    return new Pet(
+        id,
+        new CategoryData(id, categoryName),
+        name,
+        new ArrayList<>(List.of("https://example.com/" + name + ".jpg")),
+        new ArrayList<>(List.of(new TagData(id, tagName))),
+        status);
   }
 
   private Pet copyOf(Pet source) {
-    Pet copy = new Pet();
-    copy.setId(source.getId());
-    copy.setName(source.getName());
-    copy.setStatus(source.getStatus());
-    copy.setPhotoUrls(
-        source.getPhotoUrls() == null ? new ArrayList<>() : new ArrayList<>(source.getPhotoUrls()));
-    copy.setTags(
-        source.getTags() == null
-            ? new ArrayList<>()
-            : source.getTags().stream()
-                .map(t -> new TagData(t.getId(), t.getName()))
-                .collect(Collectors.toList()));
-    copy.setCategory(
-        source.getCategory() == null
+    return new Pet(
+        source.id(),
+        source.category() == null
             ? null
-            : new CategoryData(source.getCategory().getId(), source.getCategory().getName()));
-    return copy;
+            : new CategoryData(source.category().id(), source.category().name()),
+        source.name(),
+        source.photoUrls() == null ? new ArrayList<>() : new ArrayList<>(source.photoUrls()),
+        source.tags() == null
+            ? new ArrayList<>()
+            : source.tags().stream()
+                .map(t -> new TagData(t.id(), t.name()))
+                .collect(Collectors.toList()),
+        source.status());
   }
 }

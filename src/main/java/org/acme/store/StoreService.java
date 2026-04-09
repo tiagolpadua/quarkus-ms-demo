@@ -17,7 +17,7 @@ public class StoreService {
   public Map<String, Integer> getInventory() {
     Map<String, Integer> inventory = new LinkedHashMap<>();
     for (Pet pet : petRepository.listAll()) {
-      inventory.merge(pet.getStatus(), 1, Integer::sum);
+      inventory.merge(pet.status(), 1, Integer::sum);
     }
     return inventory;
   }

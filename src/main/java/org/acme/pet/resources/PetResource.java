@@ -87,6 +87,6 @@ public class PetResource {
       @FormParam("additionalMetadata") String additionalMetadata,
       @FormParam("file") String file) {
     ApiResponseData response = service.uploadImage(petId, additionalMetadata, file);
-    return Response.status(response.getCode()).entity(response).build();
+    return Response.status(response.code()).entity(response).build();
   }
 }

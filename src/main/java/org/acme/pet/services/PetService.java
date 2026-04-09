@@ -43,26 +43,23 @@ public class PetService {
   }
 
   public ApiResponseData uploadImage(Long petId, String additionalMetadata, String fileName) {
-    ApiResponseData response = new ApiResponseData();
-    response.setCode(repository.findById(petId).isPresent() ? 200 : 404);
-    response.setType(response.getCode() == 200 ? "success" : "error");
-    response.setMessage(
-        response.getCode() == 200
+    int code = repository.findById(petId).isPresent() ? 200 : 404;
+    return new ApiResponseData(
+        code,
+        code == 200 ? "success" : "error",
+        code == 200
             ? "Image uploaded for pet " + petId + formatDetails(additionalMetadata, fileName)
             : "Pet not found");
-    return response;
   }
 
   private Pet normalize(Pet pet) {
-    Pet normalized = new Pet();
-    normalized.setId(pet.getId());
-    normalized.setCategory(pet.getCategory());
-    normalized.setName(pet.getName());
-    normalized.setStatus(pet.getStatus());
-    normalized.setPhotoUrls(
-        pet.getPhotoUrls() == null ? new ArrayList<>() : new ArrayList<>(pet.getPhotoUrls()));
-    normalized.setTags(pet.getTags() == null ? new ArrayList<>() : new ArrayList<>(pet.getTags()));
-    return normalized;
+    return new Pet(
+        pet.id(),
+        pet.category(),
+        pet.name(),
+        pet.photoUrls() == null ? new ArrayList<>() : new ArrayList<>(pet.photoUrls()),
+        pet.tags() == null ? new ArrayList<>() : new ArrayList<>(pet.tags()),
+        pet.status());
   }
 
   private String formatDetails(String additionalMetadata, String fileName) {

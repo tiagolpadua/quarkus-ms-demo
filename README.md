@@ -10,12 +10,13 @@ O projeto expõe três áreas principais:
 
 ## Stack
 
-- Java 17
+- Java 21
 - Quarkus 3.34.3
 - REST com Jackson
 - SmallRye OpenAPI + Swagger UI
 - Hibernate ORM Panache
 - H2 em memória
+- MapStruct
 - JUnit + RestAssured
 - Spotless com Google Java Format
 
@@ -23,7 +24,7 @@ O projeto expõe três áreas principais:
 
 Pré-requisitos:
 
-- JDK 17+
+- JDK 21+
 
 Suba a aplicação em modo de desenvolvimento:
 
