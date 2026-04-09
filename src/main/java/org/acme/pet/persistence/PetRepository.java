@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,16 +30,17 @@ public class PetRepository implements PanacheRepository<Pet> {
       List<String> tagNames, int page, int size, String sortBy, String direction) {
     String sortField = sanitizeSortField(sortBy);
     boolean descending = isDescending(direction);
-    return getEntityManager()
-        .createQuery(
-            "select distinct p from Pet p join p.tags t where t.name in :tagNames order by p."
-                + sortField
-                + (descending ? " desc" : " asc"),
-            Pet.class)
-        .setParameter("tagNames", tagNames)
-        .setFirstResult(page * size)
-        .setMaxResults(size)
-        .getResultList();
+    var builder = getEntityManager().getCriteriaBuilder();
+    var query = builder.createQuery(Pet.class);
+    var root = query.from(Pet.class);
+    var tags = root.join("tags");
+
+    Predicate predicate = tags.get("name").in(tagNames);
+    var order = descending ? builder.desc(root.get(sortField)) : builder.asc(root.get(sortField));
+
+    query.select(root).distinct(true).where(predicate).orderBy(order);
+
+    return getEntityManager().createQuery(query).setFirstResult(page * size).setMaxResults(size).getResultList();
   }
 
   public Optional<Pet> findOptionalById(Long id) {

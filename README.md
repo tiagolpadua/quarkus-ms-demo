@@ -229,11 +229,22 @@ Resumo por pacote:
 
 ## Exemplos de acesso ao banco
 
+Regra do projeto para consultas JPA:
+
+- usar `@NamedQuery`, `@NamedNativeQuery` ou `Criteria API`
+- nao usar `EntityManager.createQuery` com JPQL em string
+
 Além do uso de Panache, o projeto também contém exemplos explícitos de outras abordagens JPA no domínio `user`:
 
 - `NamedQuery`: `GET /user/examples/named-query?status=1`
 - `NamedNativeQuery`: `GET /user/examples/named-native-query?emailDomain=example.com`
 - `Criteria API`: `GET /user/examples/criteria?usernamePrefix=seed-user&status=1&emailDomain=example.com`
+
+Exemplos no código:
+
+- `findByStatusNamedQuery` em [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java)
+- `findByEmailDomainNativeQuery` em [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java)
+- `findByCriteria` em [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java)
 
 Esses exemplos estão implementados em [User.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/User.java), [UserRepository.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/persistence/UserRepository.java) e [UserResource.java](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/java/org/acme/user/resources/UserResource.java).
 

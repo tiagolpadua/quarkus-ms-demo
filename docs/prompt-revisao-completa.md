@@ -1,3 +1,5 @@
+# Revisão completa do projeto
+
 Quero que você atue como um arquiteto de software sênior, especialista em Java, Quarkus, backend moderno, experiência do desenvolvedor (DX), observabilidade e boas práticas de engenharia.
 
 Sua tarefa é fazer uma análise completa de um projeto Java Quarkus, com foco em simplicidade, clareza arquitetural, qualidade de código, produtividade do desenvolvedor, manutenção futura e aderência a boas práticas.
