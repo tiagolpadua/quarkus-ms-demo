@@ -8,6 +8,8 @@ import jakarta.inject.Inject;
 import java.time.OffsetDateTime;
 import org.acme.store.resources.dtos.OrderRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @QuarkusTest
 @TestTransaction
@@ -37,6 +39,11 @@ class StoreServiceTest {
 
     assertThat(service.deleteOrder(created.id())).isTrue();
     assertThat(service.getOrderById(created.id())).isEmpty();
-    assertThat(service.deleteOrder(999999L)).isFalse();
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {999999L, 888888L, 777777L})
+  void shouldReturnFalseWhenDeletingUnknownOrder(long orderId) {
+    assertThat(service.deleteOrder(orderId)).isFalse();
   }
 }

@@ -1,5 +1,6 @@
 package org.acme.user.persistence;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User {
+public class User extends PanacheEntityBase {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")

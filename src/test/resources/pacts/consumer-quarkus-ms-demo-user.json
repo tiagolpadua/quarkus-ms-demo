@@ -1,0 +1,42 @@
+{
+  "consumer": {
+    "name": "consumer"
+  },
+  "provider": {
+    "name": "quarkus-ms-demo-user"
+  },
+  "interactions": [
+    {
+      "description": "get existing user by username",
+      "providerStates": [
+        {
+          "name": "user exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/user/contract-user"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "id": 1,
+          "username": "contract-user",
+          "firstName": "Contract",
+          "lastName": "User",
+          "email": "contract-user@example.com",
+          "phone": "+55 11 90000-0000",
+          "userStatus": 1
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  }
+}

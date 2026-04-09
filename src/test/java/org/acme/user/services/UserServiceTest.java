@@ -7,6 +7,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.acme.user.resources.dtos.UserRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @QuarkusTest
 @TestTransaction
@@ -59,5 +61,11 @@ class UserServiceTest {
 
     assertThat(service.delete("service-user")).isTrue();
     assertThat(service.getByUsername("service-user")).isEmpty();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"missing-user-a", "missing-user-b", "missing-user-c"})
+  void shouldReturnFalseWhenDeletingUnknownUser(String username) {
+    assertThat(service.delete(username)).isFalse();
   }
 }
