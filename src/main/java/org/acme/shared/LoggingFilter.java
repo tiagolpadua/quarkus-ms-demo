@@ -9,13 +9,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 import java.util.UUID;
-import org.jboss.logging.Logger;
-import org.jboss.logging.MDC;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @Provider
+@Slf4j
 public class LoggingFilter implements ContainerRequestFilter, ContainerResponseFilter {
-
-  private static final Logger LOG = Logger.getLogger(LoggingFilter.class);
   private static final String REQUEST_ID = "requestId";
   private static final String REQUEST_ID_HEADER = "X-Request-Id";
   private static final String START_TIME_NANOS = "requestStartTimeNanos";
@@ -31,8 +30,8 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
     context.setProperty(START_TIME_NANOS, System.nanoTime());
     MDC.put(REQUEST_ID, requestId);
 
-    LOG.infof(
-        "Request started requestId=%s method=%s path=%s remoteIp=%s userAgent=%s",
+    log.info(
+        "Request started requestId={} method={} path={} remoteIp={} userAgent={}",
         requestId,
         context.getMethod(),
         normalizePath(info.getPath()),
@@ -46,8 +45,8 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
     String requestId = (String) requestContext.getProperty(REQUEST_ID);
     responseContext.getHeaders().putSingle(REQUEST_ID_HEADER, requestId);
 
-    LOG.infof(
-        "Request completed requestId=%s method=%s path=%s status=%d durationMs=%d remoteIp=%s",
+    log.info(
+        "Request completed requestId={} method={} path={} status={} durationMs={} remoteIp={}",
         requestId,
         requestContext.getMethod(),
         normalizePath(info.getPath()),

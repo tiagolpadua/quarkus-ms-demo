@@ -61,4 +61,27 @@ class OpenApiResourceTest {
         .body(containsString("/store/order/{orderId}"))
         .body(containsString("/user/{username}"));
   }
+
+  @Test
+  void testHomePageIsRenderedByQute() {
+    given()
+        .when()
+        .get("/")
+        .then()
+        .statusCode(200)
+        .contentType(containsString("text/html"))
+        .body(containsString("Application shortcuts hub"))
+        .body(containsString("rendered by Qute"));
+  }
+
+  @Test
+  void testCustomLivenessCheckIsExposed() {
+    given()
+        .when()
+        .get("/q/health/live")
+        .then()
+        .statusCode(200)
+        .body(containsString("REST endpoint liveness"))
+        .body("status", equalTo("UP"));
+  }
 }
