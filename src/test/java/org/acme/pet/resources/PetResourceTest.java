@@ -108,6 +108,15 @@ class PetResourceTest {
         .then()
         .statusCode(404)
         .contentType(containsString("application/problem+json"));
+
+    given()
+        .when()
+        .get("/q/metrics")
+        .then()
+        .statusCode(200)
+        .body(containsString("pet_create_total"))
+        .body(containsString("pet_create_total " + 1))
+        .body(containsString("http_server_requests_seconds"));
   }
 
   @Test

@@ -3,7 +3,9 @@ package org.acme.user.resources;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -171,5 +173,52 @@ class UserResourceTest {
         .then()
         .statusCode(200)
         .body("$.size()", is(1));
+  }
+
+  @Test
+  void testRequestCorrelationHeaders() {
+    given()
+        .header("X-Request-Id", "manual-correlation-id")
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(200)
+        .header("X-Request-Id", is("manual-correlation-id"));
+
+    given()
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(200)
+        .header("X-Request-Id", not(emptyOrNullString()));
+  }
+
+  @Test
+  void testBusinessMetricsExposure() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(
+            """
+            {
+              "username": "metrics-user",
+              "firstName": "Metrics",
+              "lastName": "User",
+              "email": "metrics-user@example.com",
+              "phone": "555-555",
+              "userStatus": 1
+            }
+            """)
+        .when()
+        .post("/user")
+        .then()
+        .statusCode(201);
+
+    given()
+        .when()
+        .get("/q/metrics")
+        .then()
+        .statusCode(200)
+        .body(containsString("user_create_total"))
+        .body(containsString("http_server_requests"));
   }
 }

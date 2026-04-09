@@ -40,7 +40,11 @@ public class PetRepository implements PanacheRepository<Pet> {
 
     query.select(root).distinct(true).where(predicate).orderBy(order);
 
-    return getEntityManager().createQuery(query).setFirstResult(page * size).setMaxResults(size).getResultList();
+    return getEntityManager()
+        .createQuery(query)
+        .setFirstResult(page * size)
+        .setMaxResults(size)
+        .getResultList();
   }
 
   public Optional<Pet> findOptionalById(Long id) {

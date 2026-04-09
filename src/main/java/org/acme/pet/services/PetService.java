@@ -1,5 +1,6 @@
 package org.acme.pet.services;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -15,10 +16,13 @@ import org.acme.shared.ApiResponse;
 public class PetService {
 
   private final PetRepository repository;
+  private final MeterRegistry meterRegistry;
 
   @Transactional
   public Pet add(Pet pet) {
-    return repository.save(normalize(pet));
+    Pet createdPet = repository.save(normalize(pet));
+    meterRegistry.counter("pet_create_total").increment();
+    return createdPet;
   }
 
   @Transactional

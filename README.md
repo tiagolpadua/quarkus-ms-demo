@@ -85,7 +85,8 @@ O projeto possui suporte nativo a OpenTelemetry via extensão oficial do Quarkus
 Também foram incluídas extensões complementares de operação:
 
 - `quarkus-smallrye-health`: health checks padrão do Quarkus
-- `quarkus-micrometer`: métricas da aplicação, JVM, sistema e servidor HTTP
+- `quarkus-micrometer`: instrumentação de métricas
+- `quarkus-micrometer-registry-prometheus`: exposição das métricas em `/q/metrics`
 - `quarkus-info`: metadados de build e git em endpoint dedicado
 
 Configurações principais:
@@ -105,6 +106,17 @@ Boas práticas adotadas:
 - logs com correlação de trace para facilitar troubleshooting
 - SDK OTel desabilitado em testes para manter a suíte estável e silenciosa
 - métricas seguem Micrometer, que é o caminho recomendado pelo Quarkus para esse sinal
+
+Contrato mínimo de observabilidade:
+
+- toda resposta HTTP devolve `X-Request-Id`
+- se o cliente enviar `X-Request-Id`, o valor é preservado e reutilizado
+- se o cliente não enviar `X-Request-Id`, a aplicação gera um identificador automaticamente
+- os logs incluem `requestId`, `traceId`, `spanId` e `sampled`
+- cada request gera log de início e log de término com `method`, `path`, `status`, `durationMs` e `remoteIp`
+- métricas de negócio mínimas expostas em `/q/metrics`, incluindo `pet_create_total` e `user_create_total`
+
+Isso cria uma convenção simples de correlação entre cliente, logs da aplicação e tracing distribuído, suficiente para troubleshooting rápido sem adicionar complexidade arquitetural ao projeto.
 
 Como usar:
 

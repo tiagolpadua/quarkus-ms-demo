@@ -1,5 +1,6 @@
 package org.acme.user.services;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -16,11 +17,13 @@ import org.acme.user.persistence.UserRepository;
 public class UserService {
 
   private final UserRepository repository;
+  private final MeterRegistry meterRegistry;
 
   @Transactional
   public UserResponse create(UserRequest userRequest) {
     User user = UserMapper.toEntity(userRequest);
     repository.persist(user);
+    meterRegistry.counter("user_create_total").increment();
     return UserMapper.toResponse(user);
   }
 
