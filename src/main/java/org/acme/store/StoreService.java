@@ -1,23 +1,24 @@
 package org.acme.store;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.acme.pet.persistence.Pet;
 import org.acme.pet.persistence.PetRepository;
 
 @ApplicationScoped
+@RequiredArgsConstructor
 public class StoreService {
 
-  @Inject OrderRepository orderRepository;
-  @Inject PetRepository petRepository;
+  private final OrderRepository orderRepository;
+  private final PetRepository petRepository;
 
   public Map<String, Integer> getInventory() {
     Map<String, Integer> inventory = new LinkedHashMap<>();
     for (Pet pet : petRepository.listAll()) {
-      inventory.merge(pet.status(), 1, Integer::sum);
+      inventory.merge(pet.getStatus(), 1, Integer::sum);
     }
     return inventory;
   }
@@ -27,7 +28,7 @@ public class StoreService {
   }
 
   public Optional<Order> getOrderById(Long orderId) {
-    return orderRepository.findById(orderId);
+    return orderRepository.findOptionalById(orderId);
   }
 
   public boolean deleteOrder(Long orderId) {

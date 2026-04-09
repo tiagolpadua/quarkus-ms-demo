@@ -1,6 +1,5 @@
 package org.acme.store;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -11,13 +10,15 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Path("/store")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RequiredArgsConstructor
 public class StoreResource {
 
-  @Inject StoreService service;
+  private final StoreService service;
 
   @GET
   @Path("/inventory")

@@ -1,43 +1,44 @@
 package org.acme.user;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.acme.user.dtos.UserData;
+import lombok.RequiredArgsConstructor;
+import org.acme.user.dtos.UserDto;
 
 @ApplicationScoped
+@RequiredArgsConstructor
 public class UserService {
 
-  @Inject UserRepository repository;
-  @Inject UserMapper mapper;
+  private final UserRepository repository;
+  private final UserMapper mapper;
 
   @Transactional
-  public void create(UserData userData) {
-    repository.persist(mapper.toEntity(userData));
+  public void create(UserDto userDto) {
+    repository.persist(mapper.toEntity(userDto));
   }
 
   @Transactional
-  public void createMany(List<UserData> users) {
-    for (UserData userData : users) {
-      create(userData);
+  public void createMany(List<UserDto> users) {
+    for (UserDto userDto : users) {
+      create(userDto);
     }
   }
 
-  public Optional<UserData> getByUsername(String username) {
-    return repository.findByUsername(username).map(mapper::toData);
+  public Optional<UserDto> getByUsername(String username) {
+    return repository.findByUsername(username).map(mapper::toDto);
   }
 
   @Transactional
-  public Optional<UserData> update(String username, UserData userData) {
+  public Optional<UserDto> update(String username, UserDto userDto) {
     return repository
         .findByUsername(username)
         .map(
             user -> {
-              mapper.updateEntity(userData, user);
-              return mapper.toData(user);
+              mapper.updateEntity(userDto, user);
+              return mapper.toDto(user);
             });
   }
 
@@ -46,7 +47,7 @@ public class UserService {
     return repository.deleteByUsername(username);
   }
 
-  public List<UserData> list() {
-    return repository.listAll().stream().map(mapper::toData).collect(Collectors.toList());
+  public List<UserDto> list() {
+    return repository.listAll().stream().map(mapper::toDto).collect(Collectors.toList());
   }
 }

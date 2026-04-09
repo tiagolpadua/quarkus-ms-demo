@@ -4,8 +4,8 @@ API REST em Quarkus inspirada no contrato do Swagger Petstore, organizada em cam
 
 O projeto expõe três áreas principais:
 
-- `pet`: cadastro e consulta de pets em memória
-- `store`: inventário e pedidos em memória
+- `pet`: cadastro e consulta de pets persistidos em H2
+- `store`: inventário e pedidos persistidos em H2
 - `user`: operações de usuário com persistência em H2 usando Panache
 
 ## Stack
@@ -92,7 +92,7 @@ Ao subir a aplicação, usuários iniciais são carregados por [import.sql](/Vol
 - `seed-user-1`
 - `seed-user-2`
 
-Os domínios `pet` e `store` usam repositórios em memória com dados seedados no próprio código.
+Os domínios `pet`, `store` e `user` usam H2 em memória com schema recriado a cada boot e dados seedados por [import.sql](/Volumes/LEXAR_1TB/git/quarkus-ms-demo/src/main/resources/import.sql).
 
 ## Estrutura do projeto
 
@@ -110,8 +110,8 @@ src/main/java/org/acme
 
 Resumo por pacote:
 
-- `pet`: separação explícita entre recurso HTTP, serviço, DTOs e repositório em memória
-- `store`: fluxo de pedidos e inventário
+- `pet`: separação explícita entre recurso HTTP, serviço, DTOs e persistência JPA
+- `store`: fluxo de pedidos, inventário e persistência JPA
 - `user`: entidade JPA, repositório Panache, serviço e recurso REST
 - `shared`: filtros e componentes transversais, como logging de requests
 

@@ -1,6 +1,5 @@
 package org.acme.user;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -12,36 +11,38 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import org.acme.user.dtos.UserData;
+import lombok.RequiredArgsConstructor;
+import org.acme.user.dtos.UserDto;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RequiredArgsConstructor
 public class UserResource {
 
-  @Inject UserService service;
+  private final UserService service;
 
   @GET
-  public List<UserData> list() {
+  public List<UserDto> list() {
     return service.list();
   }
 
   @POST
-  public Response create(UserData user) {
+  public Response create(UserDto user) {
     service.create(user);
     return Response.ok().build();
   }
 
   @POST
   @Path("/createWithArray")
-  public Response createWithArray(List<UserData> users) {
+  public Response createWithArray(List<UserDto> users) {
     service.createMany(users);
     return Response.ok().build();
   }
 
   @POST
   @Path("/createWithList")
-  public Response createWithList(List<UserData> users) {
+  public Response createWithList(List<UserDto> users) {
     service.createMany(users);
     return Response.ok().build();
   }
@@ -57,7 +58,7 @@ public class UserResource {
 
   @PUT
   @Path("/{username}")
-  public Response update(@PathParam("username") String username, UserData user) {
+  public Response update(@PathParam("username") String username, UserDto user) {
     return service
         .update(username, user)
         .map(updatedUser -> Response.ok(updatedUser).build())

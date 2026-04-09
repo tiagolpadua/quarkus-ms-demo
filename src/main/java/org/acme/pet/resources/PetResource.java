@@ -1,6 +1,5 @@
 package org.acme.pet.resources;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -15,15 +14,17 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import org.acme.pet.dtos.ApiResponseData;
+import lombok.RequiredArgsConstructor;
 import org.acme.pet.persistence.Pet;
 import org.acme.pet.services.PetService;
+import org.acme.shared.ApiResponse;
 
 @Path("/pet")
 @Produces(MediaType.APPLICATION_JSON)
+@RequiredArgsConstructor
 public class PetResource {
 
-  @Inject PetService service;
+  private final PetService service;
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -86,7 +87,7 @@ public class PetResource {
       @PathParam("petId") Long petId,
       @FormParam("additionalMetadata") String additionalMetadata,
       @FormParam("file") String file) {
-    ApiResponseData response = service.uploadImage(petId, additionalMetadata, file);
+    ApiResponse response = service.uploadImage(petId, additionalMetadata, file);
     return Response.status(response.code()).entity(response).build();
   }
 }

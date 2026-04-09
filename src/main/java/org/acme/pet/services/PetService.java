@@ -1,23 +1,27 @@
 package org.acme.pet.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.acme.pet.dtos.ApiResponseData;
+import lombok.RequiredArgsConstructor;
 import org.acme.pet.persistence.Pet;
 import org.acme.pet.persistence.PetRepository;
+import org.acme.shared.ApiResponse;
 
 @ApplicationScoped
+@RequiredArgsConstructor
 public class PetService {
 
-  @Inject PetRepository repository;
+  private final PetRepository repository;
 
+  @Transactional
   public Pet add(Pet pet) {
     return repository.save(normalize(pet));
   }
 
+  @Transactional
   public Pet update(Pet pet) {
     return repository.save(normalize(pet));
   }
@@ -31,20 +35,22 @@ public class PetService {
   }
 
   public Optional<Pet> getById(Long petId) {
-    return repository.findById(petId);
+    return repository.findOptionalById(petId);
   }
 
+  @Transactional
   public Optional<Pet> updateWithForm(Long petId, String name, String status) {
     return repository.updatePartial(petId, name, status);
   }
 
+  @Transactional
   public boolean delete(Long petId) {
     return repository.delete(petId);
   }
 
-  public ApiResponseData uploadImage(Long petId, String additionalMetadata, String fileName) {
-    int code = repository.findById(petId).isPresent() ? 200 : 404;
-    return new ApiResponseData(
+  public ApiResponse uploadImage(Long petId, String additionalMetadata, String fileName) {
+    int code = repository.findOptionalById(petId).isPresent() ? 200 : 404;
+    return new ApiResponse(
         code,
         code == 200 ? "success" : "error",
         code == 200
@@ -53,13 +59,15 @@ public class PetService {
   }
 
   private Pet normalize(Pet pet) {
-    return new Pet(
-        pet.id(),
-        pet.category(),
-        pet.name(),
-        pet.photoUrls() == null ? new ArrayList<>() : new ArrayList<>(pet.photoUrls()),
-        pet.tags() == null ? new ArrayList<>() : new ArrayList<>(pet.tags()),
-        pet.status());
+    Pet normalized = new Pet();
+    normalized.setId(pet.getId());
+    normalized.setCategory(pet.getCategory());
+    normalized.setName(pet.getName());
+    normalized.setStatus(pet.getStatus());
+    normalized.setPhotoUrls(
+        pet.getPhotoUrls() == null ? new ArrayList<>() : new ArrayList<>(pet.getPhotoUrls()));
+    normalized.setTags(pet.getTags() == null ? new ArrayList<>() : new ArrayList<>(pet.getTags()));
+    return normalized;
   }
 
   private String formatDetails(String additionalMetadata, String fileName) {

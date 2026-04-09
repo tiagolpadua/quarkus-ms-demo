@@ -1,6 +1,6 @@
 package org.acme.user;
 
-import org.acme.user.dtos.UserData;
+import org.acme.user.dtos.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -10,9 +10,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 
-  User toEntity(UserData source);
+  User toEntity(UserDto source);
 
-  UserData toData(User source);
+  UserDto toDto(User source);
 
-  void updateEntity(UserData source, @MappingTarget User target);
+  void updateEntity(UserDto source, @MappingTarget User target);
 }
