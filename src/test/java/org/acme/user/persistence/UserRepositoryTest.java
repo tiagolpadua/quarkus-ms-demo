@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -12,8 +11,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Unit tests for {@link UserRepository} pure-logic private helpers.
  *
- * <p>The allowed sort fields, fallback field, and direction parsing are all exercised via reflection
- * without starting Quarkus or a database.
+ * <p>The allowed sort fields, fallback field, and direction parsing are all exercised via
+ * reflection without starting Quarkus or a database.
  */
 class UserRepositoryTest {
 

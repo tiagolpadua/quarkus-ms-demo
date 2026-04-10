@@ -1,29 +1,22 @@
 package org.acme.pet.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import jakarta.persistence.EntityManager;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Unit tests for {@link PetRepository} pure-logic methods.
  *
- * <p>Methods that delegate directly to Panache ({@code findByIdOptional}, {@code persist}, etc.) are
- * tested by mocking the EntityManager or via in-memory integration tests. The private helper methods
- * {@code sanitizeSortField} and {@code isDescending} are exercised via reflection so that every
- * branch is covered without starting Quarkus.
+ * <p>Methods that delegate directly to Panache ({@code findByIdOptional}, {@code persist}, etc.)
+ * are tested by mocking the EntityManager or via in-memory integration tests. The private helper
+ * methods {@code sanitizeSortField} and {@code isDescending} are exercised via reflection so that
+ * every branch is covered without starting Quarkus.
  */
 class PetRepositoryTest {
 
@@ -124,11 +117,10 @@ class PetRepositoryTest {
    * Returns a {@link PetRepository} subclass that overrides {@code findByIdOptional} to return the
    * given value, allowing {@code updatePartial} to be exercised without a database.
    */
-  @SuppressWarnings("unchecked")
   private PetRepository petRepositoryWithFind(Optional<Pet> stub) {
     return new PetRepository() {
       @Override
-      public Optional<Pet> findByIdOptional(Object id) {
+      public Optional<Pet> findByIdOptional(Long id) {
         return stub;
       }
     };

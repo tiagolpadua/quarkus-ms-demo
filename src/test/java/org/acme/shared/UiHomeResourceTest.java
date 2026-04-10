@@ -13,8 +13,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Unit tests for the pure-logic private methods of {@link UiHomeResource}.
  *
- * <p>The JAX-RS endpoint itself requires Qute templates and CDI beans that are only available inside
- * Quarkus. These tests target the helper methods ({@code abbreviateCommitId} and {@code
+ * <p>The JAX-RS endpoint itself requires Qute templates and CDI beans that are only available
+ * inside Quarkus. These tests target the helper methods ({@code abbreviateCommitId} and {@code
  * formatBuildTime}) directly via reflection to cover all their branches without starting the
  * container.
  */

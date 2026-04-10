@@ -168,7 +168,9 @@ class LoggingFilterTest {
     filter.filter(requestCtx);
 
     org.mockito.Mockito.verify(requestCtx)
-        .setProperty(org.mockito.ArgumentMatchers.eq("requestId"), org.mockito.ArgumentMatchers.eq("req-filter-id"));
+        .setProperty(
+            org.mockito.ArgumentMatchers.eq("requestId"),
+            org.mockito.ArgumentMatchers.eq("req-filter-id"));
     org.mockito.Mockito.verify(requestCtx)
         .setProperty(
             org.mockito.ArgumentMatchers.eq("requestStartTimeNanos"),

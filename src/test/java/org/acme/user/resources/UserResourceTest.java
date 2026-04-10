@@ -168,7 +168,8 @@ class UserResourceTest {
     PagedResponse<UserResponse> singlePage =
         new PagedResponse<>(
             List.of(
-                new UserResponse(1L, "only-user", "Only", "User", "only@example.com", "555-0001", 1)),
+                new UserResponse(
+                    1L, "only-user", "Only", "User", "only@example.com", "555-0001", 1)),
             new PageMetadata(0, 20, 1, 1, true, true, false, false),
             new SortMetadata("username", "asc"));
     when(service.listPaged(0, 20, "username", "asc")).thenReturn(singlePage);
@@ -190,7 +191,8 @@ class UserResourceTest {
     PagedResponse<UserResponse> lastPage =
         new PagedResponse<>(
             List.of(
-                new UserResponse(5L, "last-user", "Last", "User", "last@example.com", "555-0005", 1)),
+                new UserResponse(
+                    5L, "last-user", "Last", "User", "last@example.com", "555-0005", 1)),
             new PageMetadata(2, 2, 5, 3, false, true, false, true),
             new SortMetadata("username", "asc"));
     when(service.listPaged(2, 2, "username", "asc")).thenReturn(lastPage);
