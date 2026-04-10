@@ -19,6 +19,8 @@ import org.acme.pet.services.mappers.PetMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -108,6 +110,25 @@ class PetServiceTest {
     var uploadMissingPet = service.uploadImage(created.id(), "cover", "pet.png");
     assertThat(uploadMissingPet.code()).isEqualTo(404);
     assertThat(uploadMissingPet.type()).isEqualTo("error");
+  }
+
+  /**
+   * {@code @CsvSource} — each string is a comma-separated row of arguments.
+   *
+   * <p>Tests the same assertion for multiple (name, status) pairs without duplicating test methods.
+   * Each row appears as a separate test case in the build report.
+   */
+  @ParameterizedTest
+  @CsvSource({"buddy, available", "luna, pending", "max, sold"})
+  void shouldFindPetByStatusForDifferentPets(String name, String status) {
+    when(repository.findByStatus(List.of(status), 0, 20, "name", "asc"))
+        .thenReturn(List.of(pet(1L, name, status)));
+
+    var results = service.findByStatus(List.of(status), 0, 20, "name", "asc");
+
+    assertThat(results).hasSize(1);
+    assertThat(results.get(0).name()).isEqualTo(name);
+    assertThat(results.get(0).status()).isEqualTo(status);
   }
 
   private Pet pet(Long id, String name, String status) {

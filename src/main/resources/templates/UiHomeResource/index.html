@@ -6,144 +6,149 @@
   <title>Quarkus MS Demo</title>
   <link rel="stylesheet" href="/webjars/bootstrap/5.3.8/dist/css/bootstrap.min.css">
   <style>
-    :root {
-      --app-bg: #f5efe4;
-      --app-bg-accent: #e5d2b8;
-      --app-surface: rgba(255, 252, 247, 0.88);
-      --app-surface-strong: #fffaf2;
-      --app-text: #1f2933;
-      --app-muted: #52606d;
-      --app-border: rgba(31, 41, 51, 0.12);
-      --app-shadow: 0 24px 60px rgba(80, 57, 33, 0.14);
-      --bs-primary: #b54829;
-      --bs-primary-rgb: 181, 72, 41;
-      --bs-secondary-color: #52606d;
-      --bs-body-color: #1f2933;
-      --bs-body-bg: transparent;
-      --bs-border-color: rgba(31, 41, 51, 0.12);
-      --bs-link-color: #8f3219;
-      --bs-link-hover-color: #6f2412;
-      --bs-code-color: #8f3219;
-      --bs-font-sans-serif: Georgia, "Times New Roman", serif;
-      --bs-border-radius: 1rem;
-      --bs-border-radius-lg: 1.4rem;
+    html {
+      scroll-padding-top: 5rem;
     }
 
     body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.75), transparent 36%),
-        radial-gradient(circle at bottom right, rgba(181, 72, 41, 0.12), transparent 30%),
-        linear-gradient(135deg, var(--app-bg), var(--app-bg-accent));
+      font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bs-light-bg-subtle, #f8f9fa);
     }
 
-    .app-shell {
-      background: var(--app-surface);
-      border: 1px solid var(--app-border);
-      border-radius: 1.75rem;
-      box-shadow: var(--app-shadow);
-      backdrop-filter: blur(14px);
-      overflow: hidden;
+    .hero-surface {
+      background: linear-gradient(135deg, var(--bs-light) 0%, #eef3ff 100%);
     }
 
-    .app-hero {
-      background:
-        linear-gradient(140deg, rgba(255, 250, 242, 0.96), rgba(255, 245, 231, 0.88)),
-        linear-gradient(90deg, rgba(181, 72, 41, 0.07), transparent);
-      border-bottom: 1px solid var(--app-border);
+    .section-anchor {
+      scroll-margin-top: 5rem;
     }
 
-    .app-eyebrow {
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #8f3219;
-      background: rgba(181, 72, 41, 0.12);
+    .shortcut-card:hover {
+      border-color: rgba(var(--bs-primary-rgb), 0.35);
     }
 
-    .display-title {
-      font-size: clamp(2.3rem, 5vw, 4rem);
-      line-height: 0.96;
-      letter-spacing: -0.04em;
-    }
-
-    .hero-subtitle {
-      max-width: 62ch;
-      line-height: 1.7;
-    }
-
-    .shortcut-card {
-      background: var(--app-surface-strong);
-      border: 1px solid var(--app-border);
-      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-    }
-
-    .shortcut-card:hover,
-    .shortcut-card:focus-within {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 36px rgba(80, 57, 33, 0.1);
-      border-color: rgba(181, 72, 41, 0.28);
-    }
-
-    .shortcut-tag {
-      font-size: 0.74rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--bs-primary);
-    }
-
-    .shortcut-button {
-      --bs-btn-padding-y: 0.65rem;
-      --bs-btn-padding-x: 1rem;
-      --bs-btn-border-radius: 0.9rem;
-      font-weight: 700;
-    }
-
-    @media (max-width: 640px) {
-      .display-title {
-        font-size: clamp(2rem, 10vw, 2.8rem);
-      }
+    .architecture-flow {
+      white-space: pre-wrap;
+      font-family: var(--bs-font-monospace);
     }
   </style>
 </head>
-<body>
+<body id="top">
+  <nav class="navbar navbar-expand-lg sticky-top bg-body border-bottom shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="#top">Quarkus MS Demo</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homeNavbar" aria-controls="homeNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="homeNavbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#architecture">Architecture</a></li>
+          <li class="nav-item"><a class="nav-link" href="#domains">API Domains</a></li>
+          <li class="nav-item"><a class="nav-link" href="#stack">Stack</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <main class="container py-4 py-lg-5">
-    <div class="app-shell mx-auto">
-      <section class="app-hero p-4 p-lg-5">
-        <div class="row align-items-end g-4">
+    <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
+      <section class="hero-surface p-4 p-lg-5 border-bottom section-anchor" id="about">
+        <div class="row g-4 align-items-stretch">
           <div class="col-lg-8">
-            <span class="app-eyebrow badge rounded-pill px-3 py-2 fw-semibold">Quarkus MS Demo</span>
-            <h1 class="display-title fw-semibold mt-3 mb-3">Application shortcuts hub</h1>
-            <p class="hero-subtitle fs-5 text-secondary mb-0">
-              This page gathers the main documentation, observability, and development tool
-              endpoints available while the application is running at <code>{baseUrl}</code>.
+            <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis border border-primary-subtle px-3 py-2">Quarkus MS Demo</span>
+            <h1 class="display-5 fw-semibold mt-3 mb-3">Application shortcuts hub</h1>
+            <p class="lead text-secondary mb-3">
+              This Quarkus sample brings together domain-oriented packaging, layered services,
+              RFC 7807 error handling, observability, and Java 21 examples in a single educational
+              application running at <code>{baseUrl}</code>.
             </p>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <span class="badge rounded-pill text-bg-light border px-3 py-2">Educational baseline</span>
+              <span class="badge rounded-pill text-bg-light border px-3 py-2">Java 21 · Quarkus 3.x</span>
+              <span class="badge rounded-pill text-bg-light border px-3 py-2">MIT License</span>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-2">Purpose</h2>
+                    <p class="mb-0 small text-secondary">Show modern Quarkus conventions without hiding the structure behind scaffolding.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-2">Coverage</h2>
+                    <p class="mb-0 small text-secondary">REST APIs, persistence styles, validation, observability, Qute, and CI-friendly build automation.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-2">Style</h2>
+                    <p class="mb-0 small text-secondary">DTO-first resources, MapStruct mappers, constructor injection, and English-only code contracts.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
           <div class="col-lg-4">
-            <div class="card border-0 bg-dark text-white shadow-sm">
+            <div class="card h-100 text-bg-dark shadow-sm">
               <div class="card-body p-4">
-                <div class="text-uppercase small opacity-75 mb-2">Runtime stack</div>
-                <div class="fs-4 fw-semibold mb-2">Bootstrap 5.3.8</div>
-                <p class="mb-0 text-white-50">
-                  Local assets served from the application package with no external CDN dependency.
-                </p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-uppercase small text-white-50">Application Info</span>
+                  <span class="badge text-bg-light text-dark">{appInfo.activeProfile}</span>
+                </div>
+                <dl class="row row-cols-1 g-3 mb-0">
+                  <div class="col">
+                    <dt class="small text-uppercase text-white-50 mb-1">Application</dt>
+                    <dd class="mb-0 fw-semibold">{appInfo.applicationName}</dd>
+                  </div>
+                  <div class="col">
+                    <dt class="small text-uppercase text-white-50 mb-1">Version</dt>
+                    <dd class="mb-0 fw-semibold">{appInfo.applicationVersion}</dd>
+                  </div>
+                  <div class="col">
+                    <dt class="small text-uppercase text-white-50 mb-1">Java</dt>
+                    <dd class="mb-0 fw-semibold">{appInfo.javaVersion}</dd>
+                  </div>
+                  <div class="col">
+                    <dt class="small text-uppercase text-white-50 mb-1">Git</dt>
+                    <dd class="mb-0 fw-semibold">{appInfo.gitBranch} @ {appInfo.gitShortCommitId}</dd>
+                  </div>
+                  <div class="col">
+                    <dt class="small text-uppercase text-white-50 mb-1">Built</dt>
+                    <dd class="mb-0 fw-semibold">{appInfo.buildTimestamp}</dd>
+                  </div>
+                </dl>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="p-4 p-lg-5">
+      <section class="p-4 p-lg-5 border-bottom">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+          <div>
+            <h2 class="h3 mb-1">Runtime shortcuts</h2>
+            <p class="text-secondary mb-0">Direct links to the most important documentation, health, and observability endpoints.</p>
+          </div>
+          <p class="small text-secondary mb-0">All eight links are local to the running application and stay aligned with the current environment.</p>
+        </div>
+
         <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-xl-4">
           {#for shortcut in shortcuts}
           <div class="col d-flex">
-            <article class="shortcut-card card rounded-4 shadow-sm h-100 w-100">
-              <div class="card-body d-flex flex-column p-4">
-                <span class="shortcut-tag fw-semibold mb-2">{shortcut.tag}</span>
-                <h2 class="h4 mb-3">{shortcut.title}</h2>
+            <article class="shortcut-card card h-100 w-100 border shadow-sm">
+              <div class="card-body d-flex flex-column">
+                <span class="small text-uppercase text-primary fw-semibold mb-2">{shortcut.tag}</span>
+                <h3 class="h5 mb-3">{shortcut.title}</h3>
                 <p class="text-secondary flex-grow-1 mb-4">{shortcut.description}</p>
-                <a class="shortcut-button btn btn-primary stretched-link" href="{shortcut.href}">
-                  {shortcut.cta}
-                </a>
+                <a class="btn btn-primary mt-auto" href="{shortcut.href}">{shortcut.cta}</a>
               </div>
             </article>
           </div>
@@ -151,13 +156,196 @@
         </div>
       </section>
 
-      <footer class="px-4 px-lg-5 pb-4 pb-lg-5 text-secondary">
-        <div class="small">
-          The home page is rendered by Qute from <code>templates/UiHomeResource/index.html</code>.
+      <section class="p-4 p-lg-5">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+          <div>
+            <h2 class="h3 mb-1">Educational sections</h2>
+            <p class="text-secondary mb-0">Collapsed by default so the page stays concise while still surfacing architecture and stack decisions.</p>
+          </div>
+          <p class="small text-secondary mb-0">The content below mirrors the project documentation and examples exposed by the codebase.</p>
         </div>
+
+        <div class="accordion" id="educationalAccordion">
+          <div class="accordion-item section-anchor" id="architecture">
+            <h2 class="accordion-header" id="architectureHeading">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#architecturePanel" aria-expanded="false" aria-controls="architecturePanel">
+                Architecture Overview
+              </button>
+            </h2>
+            <div id="architecturePanel" class="accordion-collapse collapse" aria-labelledby="architectureHeading" data-bs-parent="#educationalAccordion">
+              <div class="accordion-body">
+                <p class="text-secondary">The application follows a clear layered design so examples remain easy to navigate and extend.</p>
+
+                <div class="table-responsive mb-4">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">Layer</th>
+                        <th scope="col">Responsibility</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Resource</td>
+                        <td>HTTP endpoints, request/response handling, validation entry points, and OpenAPI annotations.</td>
+                      </tr>
+                      <tr>
+                        <td>Service</td>
+                        <td>Business rules, DTO to entity orchestration, and Micrometer counters.</td>
+                      </tr>
+                      <tr>
+                        <td>Persistence</td>
+                        <td>JPA entities, Panache repositories, named queries, native queries, and Criteria API examples.</td>
+                      </tr>
+                      <tr>
+                        <td>Shared</td>
+                        <td>Response envelopes, pagination, logging, lifecycle hooks, UI entry point, and health checks.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <pre class="architecture-flow bg-dark text-light rounded-3 p-3 mb-4">Client -> Resource -> Service -> Repository -> H2
+Client -> LoggingFilter -> request correlation + metrics + traces
+Client -> Shared envelopes -> ListResponse / PagedResponse</pre>
+
+                <div class="table-responsive">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">Class</th>
+                        <th scope="col">Purpose</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>LoggingFilter</code></td>
+                        <td>Logs request start and completion with correlation metadata.</td>
+                      </tr>
+                      <tr>
+                        <td><code>ApplicationLifecycle</code></td>
+                        <td>Logs active profile during startup and shutdown.</td>
+                      </tr>
+                      <tr>
+                        <td><code>RestEndpointLivenessHealthCheck</code></td>
+                        <td>Custom liveness check that verifies a core REST entry point.</td>
+                      </tr>
+                      <tr>
+                        <td><code>UiHomeResource</code></td>
+                        <td>Serves this Bootstrap and Qute-powered landing page.</td>
+                      </tr>
+                      <tr>
+                        <td><code>ListResponse&lt;T&gt;</code></td>
+                        <td>Canonical envelope for non-paginated lists.</td>
+                      </tr>
+                      <tr>
+                        <td><code>PagedResponse&lt;T&gt;</code></td>
+                        <td>Pagination contract with <code>items</code>, <code>page</code>, and <code>sort</code>.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item section-anchor" id="domains">
+            <h2 class="accordion-header" id="domainsHeading">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#domainsPanel" aria-expanded="false" aria-controls="domainsPanel">
+                API Domains
+              </button>
+            </h2>
+            <div id="domainsPanel" class="accordion-collapse collapse" aria-labelledby="domainsHeading" data-bs-parent="#educationalAccordion">
+              <div class="accordion-body">
+                <p class="text-secondary">Each domain isolates its resources, DTOs, services, mappers, and persistence contracts to keep examples close to the feature they explain.</p>
+
+                <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+                  <div class="col">
+                    <div class="card h-100 shadow-sm">
+                      <div class="card-body">
+                        <div class="small text-uppercase text-secondary mb-2">/pet</div>
+                        <h3 class="h5">Pet domain</h3>
+                        <p class="text-secondary mb-0">Create, update, delete, upload image metadata, and query pets by status or tags.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100 shadow-sm">
+                      <div class="card-body">
+                        <div class="small text-uppercase text-secondary mb-2">/store</div>
+                        <h3 class="h5">Store domain</h3>
+                        <p class="text-secondary mb-0">Inspect inventory and manage orders through a compact order lifecycle example.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100 shadow-sm">
+                      <div class="card-body">
+                        <div class="small text-uppercase text-secondary mb-2">/user</div>
+                        <h3 class="h5">User domain</h3>
+                        <p class="text-secondary mb-0">CRUD plus named query, named native query, Criteria API, and paginated list examples.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="alert alert-light border mb-0">
+                  <strong>Response contract:</strong> all collection endpoints return <code>{ "items": [...] }</code>
+                  or a paginated envelope. The API never exposes a bare JSON array.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item section-anchor" id="stack">
+            <h2 class="accordion-header" id="stackHeading">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stackPanel" aria-expanded="false" aria-controls="stackPanel">
+                Technology Stack
+              </button>
+            </h2>
+            <div id="stackPanel" class="accordion-collapse collapse" aria-labelledby="stackHeading" data-bs-parent="#educationalAccordion">
+              <div class="accordion-body">
+                <p class="text-secondary">The stack is intentionally pragmatic: official Quarkus extensions for runtime capabilities and a small set of focused libraries around mapping, formatting, and tests.</p>
+
+                <div class="table-responsive">
+                  <table class="table table-sm table-borderless align-middle mb-0">
+                    <tbody>
+                      <tr>
+                        <th scope="row" class="text-secondary">Quarkus Extensions</th>
+                        <td>quarkus-rest, quarkus-rest-qute, quarkus-smallrye-openapi, quarkus-hibernate-orm-panache, quarkus-smallrye-health, quarkus-micrometer, quarkus-opentelemetry, quarkus-info</td>
+                      </tr>
+                      <tr>
+                        <th scope="row" class="text-secondary">Libraries</th>
+                        <td>MapStruct, Lombok, opentelemetry-jdbc, Bootstrap 5.3, quarkus-resteasy-problem</td>
+                      </tr>
+                      <tr>
+                        <th scope="row" class="text-secondary">Maven Plugins</th>
+                        <td>Spotless with Google Java Format and JaCoCo coverage reporting</td>
+                      </tr>
+                      <tr>
+                        <th scope="row" class="text-secondary">Testing</th>
+                        <td>JUnit 5, Mockito, AssertJ, WireMock, and direct validator-based tests with no Quarkus boot in the suite</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="px-4 px-lg-5 py-4 border-top text-secondary">
+        <p class="small mb-1">The home page is rendered by Qute from <code>templates/UiHomeResource/index.html</code>.</p>
+        <p class="small mb-0">
+          <a class="link-secondary" href="https://github.com/tiagolpadua/quarkus-ms-demo">GitHub</a>
+          · MIT License ·
+          <a class="link-secondary" href="/q/openapi">OpenAPI spec</a>
+        </p>
       </footer>
     </div>
   </main>
+
   <script src="/webjars/bootstrap/5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
-  xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.acme</groupId>
   <artifactId>quarkus-ms-demo</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>quarkus</packaging>
   <licenses>
     <license>
@@ -14,27 +14,36 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <properties>
-    <mapstruct.version>1.6.3</mapstruct.version>
-    <assertj.version>3.27.7</assertj.version>
-    <junit5.tree.reporter.version>1.5.1</junit5.tree.reporter.version>
-    <wiremock.version>3.13.2</wiremock.version>
-    <quarkus.resteasy.problem.version>3.32.1</quarkus.resteasy.problem.version>
-    <spotless.version>2.44.4</spotless.version>
+    <!-- Runtime platform versions: https://quarkus.io/guides/platform -->
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.34.3</quarkus.platform.version>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler-plugin.version>3.14.0</maven.compiler-plugin.version>
-    <surefire-plugin.version>3.5.4</surefire-plugin.version>
-    <jacoco.version>0.8.12</jacoco.version>
+
+    <!-- Java and compiler settings: https://maven.apache.org/plugins/maven-compiler-plugin/ -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler-plugin.version>3.14.0</maven.compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
+
+    <!-- Library versions -->
+    <mapstruct.version>1.6.3</mapstruct.version>
+    <quarkus.resteasy.problem.version>3.32.1</quarkus.resteasy.problem.version>
+
+    <!-- Test and quality tooling -->
+    <assertj.version>3.27.7</assertj.version>
+    <jacoco.version>0.8.12</jacoco.version>
+    <junit5.tree.reporter.version>1.5.1</junit5.tree.reporter.version>
+    <spotless.version>2.44.4</spotless.version>
+    <surefire-plugin.version>3.5.4</surefire-plugin.version>
+    <wiremock.version>3.13.2</wiremock.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <!-- Quarkus BOM centralizes compatible extension versions: https://quarkus.io/guides/maven-tooling -->
       <dependency>
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>${quarkus.platform.artifact-id}</artifactId>
@@ -46,6 +55,12 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- REST API foundation with Jakarta REST resources: https://quarkus.io/guides/rest -->
+    <!-- Jackson integration for JSON serialization/deserialization: https://quarkus.io/guides/rest-json -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-jackson</artifactId>
@@ -54,14 +69,14 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-qute</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest</artifactId>
-    </dependency>
+
+    <!-- OpenAPI generation and Swagger UI support: https://quarkus.io/guides/openapi-swaggerui -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
+
+    <!-- Persistence with Hibernate ORM, Panache, and H2 in-memory DB: https://quarkus.io/guides/hibernate-orm-panache -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
@@ -70,10 +85,14 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-h2</artifactId>
     </dependency>
+
+    <!-- Bean Validation for DTO input contracts: https://quarkus.io/guides/validation -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-validator</artifactId>
     </dependency>
+
+    <!-- Health, metrics, build info, and tracing: https://quarkus.io/guides/telemetry -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-health</artifactId>
@@ -94,25 +113,43 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-opentelemetry</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.opentelemetry.instrumentation</groupId>
-      <artifactId>opentelemetry-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
-      <version>${mapstruct.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.npm</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>5.3.8</version>
-    </dependency>
+
+    <!-- RFC 7807 Problem Details for consistent error payloads: https://docs.quarkiverse.io/quarkus-resteasy-problem/dev/index.html -->
     <dependency>
       <groupId>io.quarkiverse.resteasy-problem</groupId>
       <artifactId>quarkus-resteasy-problem</artifactId>
       <version>${quarkus.resteasy.problem.version}</version>
     </dependency>
+
+    <!-- JDBC telemetry instrumentation for database spans: https://opentelemetry.io/docs/zero-code/java/agent/instrumentation/ -->
+    <dependency>
+      <groupId>io.opentelemetry.instrumentation</groupId>
+      <artifactId>opentelemetry-jdbc</artifactId>
+    </dependency>
+
+    <!-- MapStruct generates DTO/entity mappers at compile time: https://mapstruct.org/documentation/stable/reference/html/ -->
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
+    </dependency>
+
+    <!-- Bootstrap is shipped locally via WebJar for the Qute home page: https://www.webjars.org/documentation -->
+    <dependency>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>5.3.8</version>
+    </dependency>
+
+    <!-- Lombok reduces boilerplate such as constructors and loggers: https://projectlombok.org/features/all -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.36</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Test assertions and test engine: https://junit.org/junit5/ and https://assertj.github.io/doc/ -->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
@@ -129,26 +166,36 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.wiremock</groupId>
-      <artifactId>wiremock</artifactId>
-      <version>${wiremock.version}</version>
-      <scope>test</scope>
-    </dependency>
+
+    <!-- Mockito provides unit-test doubles; Quarkus/Panache helpers remain available for specific cases: https://site.mockito.org/ and https://quarkus.io/guides/getting-started-testing -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.36</version>
-      <scope>provided</scope>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit-mockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-panache-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- WireMock simulates external HTTP integrations in isolated tests: https://wiremock.org/docs/ -->
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>${wiremock.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
+      <!-- Java compilation and annotation processing: https://maven.apache.org/plugins/maven-compiler-plugin/ -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -173,6 +220,8 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
+
+      <!-- Removes a stale static index so the Qute home page remains authoritative. -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.1.0</version>
@@ -191,6 +240,8 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Runs unit tests with a tree reporter for easier console reading: https://maven.apache.org/surefire/maven-surefire-plugin/ -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
@@ -221,6 +272,8 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+
+      <!-- JaCoCo generates coverage reports and enforces a minimum line ratio: https://www.jacoco.org/jacoco/trunk/doc/maven.html -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -238,8 +291,30 @@
               <goal>report</goal>
             </goals>
           </execution>
+          <execution>
+            <id>check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.70</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
+
+      <!-- Spotless keeps Java formatting consistent with Google Java Format: https://github.com/diffplug/spotless/tree/main/plugin-maven -->
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -261,6 +336,8 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Quarkus build plugin for dev mode, augmentation, and packaging: https://quarkus.io/guides/maven-tooling -->
       <plugin>
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
@@ -278,6 +355,7 @@
         </property>
       </activation>
       <properties>
+        <!-- Native packaging profile: https://quarkus.io/guides/building-native-image -->
         <quarkus.native.enabled>true</quarkus.native.enabled>
         <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
       </properties>

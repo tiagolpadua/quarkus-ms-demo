@@ -189,7 +189,7 @@ The project standardizes two envelopes for collection responses. Never return ba
 | Plugin | Purpose |
 | --- | --- |
 | [Spotless + Google Java Format](https://github.com/diffplug/spotless) | Automatic code formatting; fails the build if code is not formatted |
-| [JaCoCo](https://www.jacoco.org/jacoco/trunk/doc/maven.html) | Code coverage — generates reports in `target/site/jacoco/` |
+| [JaCoCo](https://www.jacoco.org/jacoco/trunk/doc/maven.html) | Code coverage — generates reports in `target/site/jacoco/`; enforces ≥ 70 % line coverage |
 | [quarkus-maven-plugin](https://quarkus.io/guides/maven-tooling) | Quarkus lifecycle: `quarkus:dev`, `package`, native build |
 
 ### Testing
@@ -198,7 +198,9 @@ The project standardizes two envelopes for collection responses. Never return ba
 | --- | --- |
 | [quarkus-junit](https://quarkus.io/guides/getting-started-testing) | `@QuarkusTest` (integration on JVM) and `@QuarkusIntegrationTest` (against packaged binary) |
 | [REST-assured](https://rest-assured.io/) | Fluent DSL for HTTP endpoint testing |
-| [Mockito](https://site.mockito.org/) | Mocking framework for unit and service-layer tests |
+| [Mockito](https://site.mockito.org/) | Mocking framework; `@Mock`, `@InjectMocks`, `@Spy` for unit and service-layer tests |
+| [quarkus-junit-mockito](https://quarkus.io/guides/getting-started-testing#injecting-mocks) | `@InjectMock` — replaces a CDI bean with a Mockito mock inside `@QuarkusTest` |
+| [quarkus-panache-mock](https://quarkus.io/guides/hibernate-orm-panache#mocking) | `PanacheMock` — mocks Panache static methods (e.g., `Pet.find`) in `@QuarkusTest` |
 | [AssertJ](https://assertj.github.io/doc/) | Fluent, readable assertion library |
 | [WireMock](https://wiremock.org/) | HTTP stub server for testing external service interactions |
 | [Playwright](https://playwright.dev/) | Browser-based end-to-end tests (e.g., Swagger UI) |
@@ -275,12 +277,18 @@ Coverage artifacts:
 - `target/site/jacoco/jacoco.xml`
 - `target/site/jacoco/index.html`
 
-Test class types:
+Test patterns used in this project:
 
-| Annotation | Runs against | Purpose |
+| Pattern | Annotation / Tool | Purpose |
 | --- | --- | --- |
-| `@QuarkusTest` | Embedded Quarkus (JVM) | Fast tests; real HTTP stack, real DB |
-| `@QuarkusIntegrationTest` | Packaged JAR/binary | Validates the final artifact end-to-end |
+| Integration test | `@QuarkusTest` | Real HTTP stack + H2; uses REST-Assured |
+| Binary integration test | `@QuarkusIntegrationTest` | Runs against the packaged JAR/native binary |
+| Unit test with mocks | `@ExtendWith(MockitoExtension.class)` | Pure Java; `@Mock`, `@InjectMocks`, `@Spy` |
+| Parameterized test | `@ParameterizedTest` + `@ValueSource` / `@CsvSource` / `@NullAndEmptySource` | Multiple inputs from a single test method |
+| HTTP stub test | `WireMockExtension` | Real HTTP server; no Quarkus container needed |
+| CDI bean mock | `@InjectMock` (`quarkus-junit-mockito`) | Replaces a CDI bean inside `@QuarkusTest` |
+| Panache static mock | `PanacheMock` (`quarkus-panache-mock`) | Mocks Active Record static methods inside `@QuarkusTest` |
+| Browser E2E | Playwright | Drives the browser against the running app |
 
 ---
 
