@@ -267,6 +267,7 @@
             <printStderrOnFailure>true</printStderrOnFailure>
             <printStderrOnSuccess>false</printStderrOnSuccess>
           </statelessTestsetInfoReporter>
+          <argLine>@{argLine} -XX:+EnableDynamicAgentLoading</argLine>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemPropertyVariables>
