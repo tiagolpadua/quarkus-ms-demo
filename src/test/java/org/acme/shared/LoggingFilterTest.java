@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Unit tests for {@link LoggingFilter} private methods accessed via reflection.
@@ -167,14 +168,14 @@ class LoggingFilterTest {
 
     filter.filter(requestCtx);
 
-    org.mockito.Mockito.verify(requestCtx)
-        .setProperty(
-            org.mockito.ArgumentMatchers.eq("requestId"),
-            org.mockito.ArgumentMatchers.eq("req-filter-id"));
-    org.mockito.Mockito.verify(requestCtx)
-        .setProperty(
-            org.mockito.ArgumentMatchers.eq("requestStartTimeNanos"),
-            org.mockito.ArgumentMatchers.any());
+    ArgumentCaptor<String> propertyNameCaptor = ArgumentCaptor.forClass(String.class);
+    ArgumentCaptor<Object> propertyValueCaptor = ArgumentCaptor.forClass(Object.class);
+    org.mockito.Mockito.verify(requestCtx, org.mockito.Mockito.times(2))
+        .setProperty(propertyNameCaptor.capture(), propertyValueCaptor.capture());
+    assertThat(propertyNameCaptor.getAllValues())
+        .containsExactly("requestId", "requestStartTimeNanos");
+    assertThat(propertyValueCaptor.getAllValues().getFirst()).isEqualTo("req-filter-id");
+    assertThat(propertyValueCaptor.getAllValues().get(1)).isInstanceOf(Long.class);
   }
 
   @Test
@@ -197,8 +198,16 @@ class LoggingFilterTest {
     when(httpRequest.getHeader("User-Agent")).thenReturn(null);
     requestField.set(filter, httpRequest);
 
-    // Should not throw — "unknown" is used as the userAgent fallback.
     filter.filter(requestCtx);
+
+    ArgumentCaptor<String> propertyNameCaptor = ArgumentCaptor.forClass(String.class);
+    ArgumentCaptor<Object> propertyValueCaptor = ArgumentCaptor.forClass(Object.class);
+    org.mockito.Mockito.verify(requestCtx, org.mockito.Mockito.times(2))
+        .setProperty(propertyNameCaptor.capture(), propertyValueCaptor.capture());
+    assertThat(propertyNameCaptor.getAllValues())
+        .containsExactly("requestId", "requestStartTimeNanos");
+    assertThat(propertyValueCaptor.getAllValues().getFirst()).isEqualTo("id-no-agent");
+    assertThat(propertyValueCaptor.getAllValues().get(1)).isInstanceOf(Long.class);
   }
 
   // ── helpers ───────────────────────────────────────────────────────────────
