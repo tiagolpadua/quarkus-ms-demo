@@ -34,7 +34,7 @@ class RestEndpointLivenessHealthCheckTest {
   private RestEndpointLivenessHealthCheck check;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     check = new RestEndpointLivenessHealthCheck();
     setField("host", "localhost");
     setField("port", wireMock.getPort());
@@ -43,19 +43,20 @@ class RestEndpointLivenessHealthCheckTest {
   // ── call() — happy path ───────────────────────────────────────────────────
 
   @Test
-  void shouldReportUpWhen200() throws Exception {
+  void shouldReportUpWhen200() {
     wireMock.stubFor(get("/q/openapi").willReturn(aResponse().withStatus(200)));
 
     HealthCheckResponse response = check.call();
 
     assertThat(response.getStatus()).isEqualTo(HealthCheckResponse.Status.UP);
     assertThat(response.getData()).isPresent();
-    assertThat(response.getData().get()).containsKey("endpoint");
-    assertThat(response.getData().get().get("statusCode")).isEqualTo(200L);
+    assertThat(response.getData().orElseThrow())
+        .containsEntry("endpoint", "http://localhost:%d/q/openapi".formatted(wireMock.getPort()))
+        .containsEntry("statusCode", 200L);
   }
 
   @Test
-  void shouldReportUpWhen404() throws Exception {
+  void shouldReportUpWhen404() {
     // 404 is < 500 so the check considers the server alive.
     wireMock.stubFor(get("/q/openapi").willReturn(aResponse().withStatus(404)));
 
@@ -65,24 +66,24 @@ class RestEndpointLivenessHealthCheckTest {
   }
 
   @Test
-  void shouldReportDownWhen500() throws Exception {
+  void shouldReportDownWhen500() {
     wireMock.stubFor(get("/q/openapi").willReturn(aResponse().withStatus(500)));
 
     HealthCheckResponse response = check.call();
 
     assertThat(response.getStatus()).isEqualTo(HealthCheckResponse.Status.DOWN);
-    assertThat(response.getData().get().get("statusCode")).isEqualTo(500L);
+    assertThat(response.getData().orElseThrow()).containsEntry("statusCode", 500L);
   }
 
   @Test
-  void shouldReportDownWhenConnectionRefused() throws Exception {
+  void shouldReportDownWhenConnectionRefused() {
     // Point to a port where nothing is listening.
     setField("port", 1);
 
     HealthCheckResponse response = check.call();
 
     assertThat(response.getStatus()).isEqualTo(HealthCheckResponse.Status.DOWN);
-    assertThat(response.getData().get()).containsKey("error");
+    assertThat(response.getData().orElseThrow()).containsKey("error");
   }
 
   // ── normalizeHost ─────────────────────────────────────────────────────────
@@ -90,27 +91,35 @@ class RestEndpointLivenessHealthCheckTest {
   @ParameterizedTest
   @NullAndEmptySource
   @ValueSource(strings = {"0.0.0.0", "::", "   "})
-  void shouldNormalizeWildcardHostToLocalhost(String rawHost) throws Exception {
+  void shouldNormalizeWildcardHostToLocalhost(String rawHost) {
     assertThat(invokeNormalizeHost(rawHost)).isEqualTo("localhost");
   }
 
   @Test
-  void shouldReturnHostAsIsWhenNormal() throws Exception {
+  void shouldReturnHostAsIsWhenNormal() {
     assertThat(invokeNormalizeHost("192.168.1.1")).isEqualTo("192.168.1.1");
   }
 
   // ── helpers ───────────────────────────────────────────────────────────────
 
-  private String invokeNormalizeHost(String rawHost) throws Exception {
-    Method m =
-        RestEndpointLivenessHealthCheck.class.getDeclaredMethod("normalizeHost", String.class);
-    m.setAccessible(true);
-    return (String) m.invoke(check, rawHost);
+  private String invokeNormalizeHost(String rawHost) {
+    try {
+      Method method =
+          RestEndpointLivenessHealthCheck.class.getDeclaredMethod("normalizeHost", String.class);
+      method.setAccessible(true);
+      return (String) method.invoke(check, rawHost);
+    } catch (ReflectiveOperationException ex) {
+      throw new IllegalStateException(ex);
+    }
   }
 
-  private void setField(String name, Object value) throws Exception {
-    Field f = RestEndpointLivenessHealthCheck.class.getDeclaredField(name);
-    f.setAccessible(true);
-    f.set(check, value);
+  private void setField(String name, Object value) {
+    try {
+      Field field = RestEndpointLivenessHealthCheck.class.getDeclaredField(name);
+      field.setAccessible(true);
+      field.set(check, value);
+    } catch (ReflectiveOperationException ex) {
+      throw new IllegalStateException(ex);
+    }
   }
 }

@@ -6,7 +6,6 @@ import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.runtime.configuration.ConfigUtils;
 import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -16,20 +15,29 @@ import jakarta.ws.rs.core.UriInfo;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 @Path("/")
+@RequiredArgsConstructor
+@SuppressWarnings("java:S6813")
 public class UiHomeResource {
 
   private static final DateTimeFormatter BUILD_TIME_FORMAT =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+  private static final String HEALTH_TAG = "Health";
+  private static final String UNAVAILABLE = "unavailable";
 
-  @Inject Instance<BuildInfo> buildInfo;
+  // Constructor injection is provided by Lombok via @RequiredArgsConstructor.
+  private final Instance<BuildInfo> buildInfo;
 
-  @Inject Instance<GitInfo> gitInfo;
+  // Constructor injection is provided by Lombok via @RequiredArgsConstructor.
+  private final Instance<GitInfo> gitInfo;
 
   @CheckedTemplate
-  static class Templates {
+  static final class Templates {
+    private Templates() {}
+
     static native TemplateInstance index(String baseUrl, List<Shortcut> shortcuts, AppInfo appInfo);
   }
 
@@ -61,13 +69,11 @@ public class UiHomeResource {
     String activeProfile = profiles.isEmpty() ? "default" : profiles.getFirst();
 
     String buildTimestamp =
-        currentBuildInfo != null ? formatBuildTime(currentBuildInfo.time()) : "unavailable";
+        currentBuildInfo != null ? formatBuildTime(currentBuildInfo.time()) : UNAVAILABLE;
 
-    String gitBranch = currentGitInfo != null ? currentGitInfo.branch() : "unavailable";
+    String gitBranch = currentGitInfo != null ? currentGitInfo.branch() : UNAVAILABLE;
     String gitShortCommitId =
-        currentGitInfo != null
-            ? abbreviateCommitId(currentGitInfo.latestCommitId())
-            : "unavailable";
+        currentGitInfo != null ? abbreviateCommitId(currentGitInfo.latestCommitId()) : UNAVAILABLE;
 
     return new AppInfo(
         applicationName,
@@ -80,12 +86,12 @@ public class UiHomeResource {
   }
 
   private String formatBuildTime(OffsetDateTime buildTime) {
-    return buildTime == null ? "unavailable" : BUILD_TIME_FORMAT.format(buildTime);
+    return buildTime == null ? UNAVAILABLE : BUILD_TIME_FORMAT.format(buildTime);
   }
 
   private String abbreviateCommitId(String commitId) {
     if (commitId == null || commitId.isBlank()) {
-      return "unavailable";
+      return UNAVAILABLE;
     }
 
     return commitId.length() <= 7 ? commitId : commitId.substring(0, 7);
@@ -112,19 +118,19 @@ public class UiHomeResource {
             "/q/dev-ui",
             "Open Dev UI"),
         new Shortcut(
-            "Health",
-            "Health",
+            HEALTH_TAG,
+            HEALTH_TAG,
             "Consolidated view of application health checks.",
             "/q/health",
             "Open Health"),
         new Shortcut(
-            "Health",
+            HEALTH_TAG,
             "Readiness",
             "Endpoint to confirm whether the application is ready to receive traffic.",
             "/q/health/ready",
             "Open Readiness"),
         new Shortcut(
-            "Health",
+            HEALTH_TAG,
             "Liveness",
             "Endpoint to verify whether the application is still alive during execution.",
             "/q/health/live",

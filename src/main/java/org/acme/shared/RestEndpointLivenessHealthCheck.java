@@ -16,6 +16,7 @@ import org.eclipse.microprofile.health.Liveness;
 @ApplicationScoped
 public class RestEndpointLivenessHealthCheck implements HealthCheck {
 
+  private static final String HEALTH_CHECK_NAME = "REST endpoint liveness";
   private static final HttpClient HTTP_CLIENT =
       HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(1)).build();
 
@@ -39,17 +40,20 @@ public class RestEndpointLivenessHealthCheck implements HealthCheck {
       boolean up = response.statusCode() >= 200 && response.statusCode() < 500;
 
       return (up
-              ? HealthCheckResponse.named("REST endpoint liveness").up()
-              : HealthCheckResponse.named("REST endpoint liveness").down())
+              ? HealthCheckResponse.named(HEALTH_CHECK_NAME).up()
+              : HealthCheckResponse.named(HEALTH_CHECK_NAME).down())
           .withData("endpoint", target)
           .withData("statusCode", response.statusCode())
           .build();
-    } catch (IOException | InterruptedException ex) {
-      if (ex instanceof InterruptedException) {
-        Thread.currentThread().interrupt();
-      }
-
-      return HealthCheckResponse.named("REST endpoint liveness")
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      return HealthCheckResponse.named(HEALTH_CHECK_NAME)
+          .down()
+          .withData("endpoint", target)
+          .withData("error", ex.getClass().getSimpleName())
+          .build();
+    } catch (IOException ex) {
+      return HealthCheckResponse.named(HEALTH_CHECK_NAME)
           .down()
           .withData("endpoint", target)
           .withData("error", ex.getClass().getSimpleName())

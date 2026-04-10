@@ -1,5 +1,7 @@
 package org.acme.shared;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -15,12 +17,12 @@ class ApplicationLifecycleTest {
   @Test
   void shouldStartWithoutThrowing() {
     ApplicationLifecycle lifecycle = new ApplicationLifecycle();
-    lifecycle.onStart(null);
+    assertThatCode(() -> lifecycle.onStart(null)).doesNotThrowAnyException();
   }
 
   @Test
   void shouldStopWithoutThrowing() {
     ApplicationLifecycle lifecycle = new ApplicationLifecycle();
-    lifecycle.onStop(null);
+    assertThatCode(() -> lifecycle.onStop(null)).doesNotThrowAnyException();
   }
 }

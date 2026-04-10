@@ -11,7 +11,7 @@ class OpenApiResourceTest {
 
   @Test
   void shouldExposeExpectedShortcutDefinitions() throws Exception {
-    UiHomeResource resource = new UiHomeResource();
+    UiHomeResource resource = new UiHomeResource(null, null);
     Method shortcutsMethod = UiHomeResource.class.getDeclaredMethod("shortcuts");
     shortcutsMethod.setAccessible(true);
 
