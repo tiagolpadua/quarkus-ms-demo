@@ -84,7 +84,7 @@ class PetResourceTest {
             "sold");
 
     when(service.add(createRequest)).thenReturn(createdPet);
-    when(service.getById(petId)).thenReturn(Optional.of(createdPet), Optional.empty());
+    when(service.getById(petId)).thenReturn(Optional.of(createdPet)).thenReturn(Optional.empty());
     when(service.findByStatus(List.of("available"), null, null, null, null))
         .thenReturn(List.of(createdPet));
     when(service.findByTags(List.of("friendly"), null, null, null, null))

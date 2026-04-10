@@ -9,9 +9,9 @@ services:
       - "9411:9411"   # Zipkin receiver
       - "8888:8888"   # Prometheus metrics port
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./otelcol-config.yaml:/etc/otelcol-config.yaml
     command:
-      - "--config=/etc/otel-collector-config.yaml"
+      - "--config=/etc/otelcol-config.yaml"
     environment:
       - GOGC=80
     depends_on:

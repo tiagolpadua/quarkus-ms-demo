@@ -53,10 +53,9 @@ class UserServiceTest {
         .when(repository)
         .persist(any(User.class));
     when(repository.findByUsername("service-user"))
-        .thenReturn(
-            Optional.of(user(77L, "service-user", "Service", 1)),
-            Optional.of(user(77L, "service-user", "Updated", 2)),
-            Optional.empty());
+        .thenReturn(Optional.of(user(77L, "service-user", "Service", 1)))
+        .thenReturn(Optional.of(user(77L, "service-user", "Updated", 2)))
+        .thenReturn(Optional.empty());
     when(repository.listPaged(0, 20, "username", "asc"))
         .thenReturn(List.of(user(77L, "service-user", "Updated", 2)));
     when(repository.listPageResult(0, 10, "username", "asc"))

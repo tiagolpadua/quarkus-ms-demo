@@ -56,7 +56,9 @@ class StoreResourceTest {
 
     when(service.getInventory()).thenReturn(inventory);
     when(service.placeOrder(orderRequest)).thenReturn(orderResponse);
-    when(service.getOrderById(2L)).thenReturn(Optional.of(orderResponse), Optional.empty());
+    when(service.getOrderById(2L))
+        .thenReturn(Optional.of(orderResponse))
+        .thenReturn(Optional.empty());
     when(service.deleteOrder(2L)).thenReturn(true);
 
     assertThat(resource.getInventory()).isEqualTo(inventory);

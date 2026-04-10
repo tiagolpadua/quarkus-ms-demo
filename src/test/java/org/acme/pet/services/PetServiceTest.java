@@ -53,11 +53,10 @@ class PetServiceTest {
               return pet;
             });
     when(repository.findOptionalById(99L))
-        .thenReturn(
-            Optional.of(pet(99L, "service-dog", "available")),
-            Optional.of(pet(99L, "service-dog", "available")),
-            Optional.empty(),
-            Optional.empty());
+        .thenReturn(Optional.of(pet(99L, "service-dog", "available")))
+        .thenReturn(Optional.of(pet(99L, "service-dog", "available")))
+        .thenReturn(Optional.empty())
+        .thenReturn(Optional.empty());
     when(repository.updatePartial(99L, "service-dog-form", "sold"))
         .thenReturn(Optional.of(pet(99L, "service-dog-form", "sold")));
     when(repository.delete(99L)).thenReturn(true);

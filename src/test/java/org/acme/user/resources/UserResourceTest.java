@@ -63,7 +63,9 @@ class UserResourceTest {
 
     when(service.list(0, 20, "username", "asc")).thenReturn(List.of(seedUser1, seedUser2));
     when(service.create(createRequest)).thenReturn(createdUser);
-    when(service.getByUsername("user1")).thenReturn(Optional.of(createdUser), Optional.empty());
+    when(service.getByUsername("user1"))
+        .thenReturn(Optional.of(createdUser))
+        .thenReturn(Optional.empty());
     when(service.listByStatusNamedQuery(1)).thenReturn(List.of(seedUser1, seedUser2, createdUser));
     when(service.listByEmailDomainNativeQuery("example.com"))
         .thenReturn(List.of(seedUser1, seedUser2, createdUser));

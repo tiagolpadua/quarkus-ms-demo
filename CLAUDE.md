@@ -132,7 +132,7 @@ Local full stack via Docker Compose (`docker-compose.yml`):
 
 - **OTEL Collector** — ports 4317 (gRPC), 4318 (HTTP), 8888 (Prometheus metrics)
 - **Jaeger UI** — `http://localhost:16686`
-- Config: `otel-collector-config.yaml`
+- Config: `otelcol-config.yaml`
 
 Key env vars:
 

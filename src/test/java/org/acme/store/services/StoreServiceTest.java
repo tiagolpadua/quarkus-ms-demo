@@ -49,7 +49,8 @@ class StoreServiceTest {
               return order;
             });
     when(orderRepository.findOptionalById(55L))
-        .thenReturn(Optional.of(order(55L, 1L, 2, "approved", true)), Optional.empty());
+        .thenReturn(Optional.of(order(55L, 1L, 2, "approved", true)))
+        .thenReturn(Optional.empty());
     when(orderRepository.delete(55L)).thenReturn(true);
 
     var inventory = service.getInventory();
