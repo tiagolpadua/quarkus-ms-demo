@@ -24,7 +24,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/store")
@@ -61,16 +60,14 @@ public class StoreResource {
           @Content(
               mediaType = MediaType.APPLICATION_JSON,
               schema = @Schema(implementation = OrderRequest.class)))
-  @APIResponses({
-    @APIResponse(
-        responseCode = "201",
-        description = "Order created",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = OrderResponse.class))),
-    @APIResponse(responseCode = "400", description = "Invalid request payload")
-  })
+  @APIResponse(
+      responseCode = "201",
+      description = "Order created",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = OrderResponse.class)))
+  @APIResponse(responseCode = "400", description = "Invalid request payload")
   public Response placeOrder(@Valid OrderRequest order) {
     OrderResponse response = service.placeOrder(order);
     return Response.created(
@@ -86,16 +83,14 @@ public class StoreResource {
   @GET
   @Path("/order/{orderId}")
   @Operation(summary = "Find order by id")
-  @APIResponses({
-    @APIResponse(
-        responseCode = "200",
-        description = "Order found",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = OrderResponse.class))),
-    @APIResponse(responseCode = "404", description = "Order not found")
-  })
+  @APIResponse(
+      responseCode = "200",
+      description = "Order found",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = OrderResponse.class)))
+  @APIResponse(responseCode = "404", description = "Order not found")
   public OrderResponse getOrderById(@PathParam("orderId") @Positive Long orderId) {
     return service
         .getOrderById(orderId)
@@ -105,10 +100,8 @@ public class StoreResource {
   @DELETE
   @Path("/order/{orderId}")
   @Operation(summary = "Delete an order by id")
-  @APIResponses({
-    @APIResponse(responseCode = "204", description = "Order deleted"),
-    @APIResponse(responseCode = "404", description = "Order not found")
-  })
+  @APIResponse(responseCode = "204", description = "Order deleted")
+  @APIResponse(responseCode = "404", description = "Order not found")
   public Response deleteOrder(@PathParam("orderId") @Positive Long orderId) {
     if (!service.deleteOrder(orderId)) {
       throw new NotFoundException("Order not found: " + orderId);

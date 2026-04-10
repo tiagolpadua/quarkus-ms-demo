@@ -32,7 +32,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/pet")
@@ -54,16 +53,14 @@ public class PetResource {
           @Content(
               mediaType = MediaType.APPLICATION_JSON,
               schema = @Schema(implementation = PetRequest.class)))
-  @APIResponses({
-    @APIResponse(
-        responseCode = "201",
-        description = "Pet created",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = PetResponse.class))),
-    @APIResponse(responseCode = "400", description = "Invalid request payload")
-  })
+  @APIResponse(
+      responseCode = "201",
+      description = "Pet created",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = PetResponse.class)))
+  @APIResponse(responseCode = "400", description = "Invalid request payload")
   public Response add(@Valid PetRequest pet) {
     PetResponse response = service.add(pet);
     return Response.created(
@@ -81,16 +78,14 @@ public class PetResource {
           @Content(
               mediaType = MediaType.APPLICATION_JSON,
               schema = @Schema(implementation = PetRequest.class)))
-  @APIResponses({
-    @APIResponse(
-        responseCode = "200",
-        description = "Pet updated",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = PetResponse.class))),
-    @APIResponse(responseCode = "404", description = "Pet not found")
-  })
+  @APIResponse(
+      responseCode = "200",
+      description = "Pet updated",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = PetResponse.class)))
+  @APIResponse(responseCode = "404", description = "Pet not found")
   public PetResponse update(@Valid PetRequest pet) {
     return service.update(pet);
   }
@@ -134,16 +129,14 @@ public class PetResource {
   @GET
   @Path("/{petId}")
   @Operation(summary = "Find pet by id")
-  @APIResponses({
-    @APIResponse(
-        responseCode = "200",
-        description = "Pet found",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = PetResponse.class))),
-    @APIResponse(responseCode = "404", description = "Pet not found")
-  })
+  @APIResponse(
+      responseCode = "200",
+      description = "Pet found",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = PetResponse.class)))
+  @APIResponse(responseCode = "404", description = "Pet not found")
   public PetResponse getById(@PathParam("petId") @Positive Long petId) {
     return service
         .getById(petId)
@@ -154,16 +147,14 @@ public class PetResource {
   @Path("/{petId}")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Operation(summary = "Update pet fields using form data")
-  @APIResponses({
-    @APIResponse(
-        responseCode = "200",
-        description = "Pet updated",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = PetResponse.class))),
-    @APIResponse(responseCode = "404", description = "Pet not found")
-  })
+  @APIResponse(
+      responseCode = "200",
+      description = "Pet updated",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = PetResponse.class)))
+  @APIResponse(responseCode = "404", description = "Pet not found")
   public Response updateWithForm(
       @PathParam("petId") Long petId,
       @FormParam("name") String name,
@@ -178,10 +169,8 @@ public class PetResource {
   @DELETE
   @Path("/{petId}")
   @Operation(summary = "Delete a pet")
-  @APIResponses({
-    @APIResponse(responseCode = "204", description = "Pet deleted"),
-    @APIResponse(responseCode = "404", description = "Pet not found")
-  })
+  @APIResponse(responseCode = "204", description = "Pet deleted")
+  @APIResponse(responseCode = "404", description = "Pet not found")
   public Response delete(
       @HeaderParam("api_key") String apiKey, @PathParam("petId") @Positive Long petId) {
     if (!service.delete(petId)) {

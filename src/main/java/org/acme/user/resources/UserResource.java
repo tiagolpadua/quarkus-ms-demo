@@ -33,7 +33,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/user")
@@ -110,16 +109,14 @@ public class UserResource {
           @Content(
               mediaType = MediaType.APPLICATION_JSON,
               schema = @Schema(implementation = UserRequest.class)))
-  @APIResponses({
-    @APIResponse(
-        responseCode = "201",
-        description = "User created",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = UserResponse.class))),
-    @APIResponse(responseCode = "400", description = "Invalid request payload")
-  })
+  @APIResponse(
+      responseCode = "201",
+      description = "User created",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = UserResponse.class)))
+  @APIResponse(responseCode = "400", description = "Invalid request payload")
   public Response create(@Valid UserRequest user) {
     UserResponse response = service.create(user);
     return Response.created(uriInfo.getAbsolutePathBuilder().path(response.username()).build())
@@ -162,16 +159,14 @@ public class UserResource {
   @GET
   @Path("/{username}")
   @Operation(summary = "Get user by username")
-  @APIResponses({
-    @APIResponse(
-        responseCode = "200",
-        description = "User found",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = UserResponse.class))),
-    @APIResponse(responseCode = "404", description = "User not found")
-  })
+  @APIResponse(
+      responseCode = "200",
+      description = "User found",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = UserResponse.class)))
+  @APIResponse(responseCode = "404", description = "User not found")
   public UserResponse getByUsername(@PathParam("username") @NotBlank String username) {
     return service
         .getByUsername(username)
@@ -187,16 +182,14 @@ public class UserResource {
           @Content(
               mediaType = MediaType.APPLICATION_JSON,
               schema = @Schema(implementation = UserRequest.class)))
-  @APIResponses({
-    @APIResponse(
-        responseCode = "200",
-        description = "User updated",
-        content =
-            @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = UserResponse.class))),
-    @APIResponse(responseCode = "404", description = "User not found")
-  })
+  @APIResponse(
+      responseCode = "200",
+      description = "User updated",
+      content =
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON,
+              schema = @Schema(implementation = UserResponse.class)))
+  @APIResponse(responseCode = "404", description = "User not found")
   public Response update(
       @PathParam("username") @NotBlank String username, @Valid UserRequest user) {
     UserResponse response =
@@ -209,10 +202,8 @@ public class UserResource {
   @DELETE
   @Path("/{username}")
   @Operation(summary = "Delete user by username")
-  @APIResponses({
-    @APIResponse(responseCode = "204", description = "User deleted"),
-    @APIResponse(responseCode = "404", description = "User not found")
-  })
+  @APIResponse(responseCode = "204", description = "User deleted")
+  @APIResponse(responseCode = "404", description = "User not found")
   public Response delete(@PathParam("username") @NotBlank String username) {
     if (!service.delete(username)) {
       throw new NotFoundException("User not found: " + username);
