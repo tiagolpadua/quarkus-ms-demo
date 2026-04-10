@@ -270,6 +270,7 @@
           <argLine>@{argLine} -XX:+EnableDynamicAgentLoading</argLine>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <quarkus.test.argLine>@{argLine} -XX:+EnableDynamicAgentLoading</quarkus.test.argLine>
           </systemPropertyVariables>
         </configuration>
       </plugin>
