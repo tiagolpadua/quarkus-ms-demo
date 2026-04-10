@@ -143,6 +143,62 @@ class LoggingFilterTest {
     assertThat(headers.getFirst("X-Request-Id")).isEqualTo("propagated-id");
   }
 
+  // ── filter request — full request filter path ─────────────────────────────
+
+  @Test
+  void shouldExecuteRequestFilterAndSetProperties() throws Exception {
+    ContainerRequestContext requestCtx = mock(ContainerRequestContext.class);
+    when(requestCtx.getHeaderString("X-Request-Id")).thenReturn("req-filter-id");
+    when(requestCtx.getMethod()).thenReturn("POST");
+
+    var infoField = LoggingFilter.class.getDeclaredField("info");
+    infoField.setAccessible(true);
+    jakarta.ws.rs.core.UriInfo uriInfo = mock(jakarta.ws.rs.core.UriInfo.class);
+    when(uriInfo.getPath()).thenReturn("/pet");
+    infoField.set(filter, uriInfo);
+
+    var requestField = LoggingFilter.class.getDeclaredField("request");
+    requestField.setAccessible(true);
+    io.vertx.core.http.HttpServerRequest httpRequest =
+        mock(io.vertx.core.http.HttpServerRequest.class);
+    when(httpRequest.remoteAddress()).thenReturn(null);
+    when(httpRequest.getHeader("User-Agent")).thenReturn("TestAgent/1.0");
+    requestField.set(filter, httpRequest);
+
+    filter.filter(requestCtx);
+
+    org.mockito.Mockito.verify(requestCtx)
+        .setProperty(org.mockito.ArgumentMatchers.eq("requestId"), org.mockito.ArgumentMatchers.eq("req-filter-id"));
+    org.mockito.Mockito.verify(requestCtx)
+        .setProperty(
+            org.mockito.ArgumentMatchers.eq("requestStartTimeNanos"),
+            org.mockito.ArgumentMatchers.any());
+  }
+
+  @Test
+  void shouldUseUnknownWhenUserAgentIsAbsent() throws Exception {
+    ContainerRequestContext requestCtx = mock(ContainerRequestContext.class);
+    when(requestCtx.getHeaderString("X-Request-Id")).thenReturn("id-no-agent");
+    when(requestCtx.getMethod()).thenReturn("GET");
+
+    var infoField = LoggingFilter.class.getDeclaredField("info");
+    infoField.setAccessible(true);
+    jakarta.ws.rs.core.UriInfo uriInfo = mock(jakarta.ws.rs.core.UriInfo.class);
+    when(uriInfo.getPath()).thenReturn("/store");
+    infoField.set(filter, uriInfo);
+
+    var requestField = LoggingFilter.class.getDeclaredField("request");
+    requestField.setAccessible(true);
+    io.vertx.core.http.HttpServerRequest httpRequest =
+        mock(io.vertx.core.http.HttpServerRequest.class);
+    when(httpRequest.remoteAddress()).thenReturn(null);
+    when(httpRequest.getHeader("User-Agent")).thenReturn(null);
+    requestField.set(filter, httpRequest);
+
+    // Should not throw — "unknown" is used as the userAgent fallback.
+    filter.filter(requestCtx);
+  }
+
   // ── helpers ───────────────────────────────────────────────────────────────
 
   private String invokeResolveRequestId(ContainerRequestContext ctx) throws Exception {

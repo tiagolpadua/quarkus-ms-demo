@@ -159,6 +159,50 @@ class UserResourceTest {
   }
 
   @Test
+  void shouldReturnPagedResponseWithNoPrevLinkOnFirstPage() {
+    UriInfo uriInfo = mock(UriInfo.class);
+    when(uriInfo.getAbsolutePathBuilder())
+        .thenAnswer(invocation -> UriBuilder.fromUri("http://localhost/user/paged"));
+    resource.uriInfo = uriInfo;
+
+    PagedResponse<UserResponse> singlePage =
+        new PagedResponse<>(
+            List.of(
+                new UserResponse(1L, "only-user", "Only", "User", "only@example.com", "555-0001", 1)),
+            new PageMetadata(0, 20, 1, 1, true, true, false, false),
+            new SortMetadata("username", "asc"));
+    when(service.listPaged(0, 20, "username", "asc")).thenReturn(singlePage);
+
+    Response response = resource.listPaged(0, 20, "username", "asc");
+
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getLinks()).extracting(Link::getRel).contains("self");
+    assertThat(response.getLinks()).extracting(Link::getRel).doesNotContain("next", "prev");
+  }
+
+  @Test
+  void shouldReturnPagedResponseWithPrevLinkOnLastPage() {
+    UriInfo uriInfo = mock(UriInfo.class);
+    when(uriInfo.getAbsolutePathBuilder())
+        .thenAnswer(invocation -> UriBuilder.fromUri("http://localhost/user/paged"));
+    resource.uriInfo = uriInfo;
+
+    PagedResponse<UserResponse> lastPage =
+        new PagedResponse<>(
+            List.of(
+                new UserResponse(5L, "last-user", "Last", "User", "last@example.com", "555-0005", 1)),
+            new PageMetadata(2, 2, 5, 3, false, true, false, true),
+            new SortMetadata("username", "asc"));
+    when(service.listPaged(2, 2, "username", "asc")).thenReturn(lastPage);
+
+    Response response = resource.listPaged(2, 2, "username", "asc");
+
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getLinks()).extracting(Link::getRel).contains("self", "prev");
+    assertThat(response.getLinks()).extracting(Link::getRel).doesNotContain("next");
+  }
+
+  @Test
   void shouldThrowWhenUserIsMissing() {
     UserRequest updateRequest =
         new UserRequest(
