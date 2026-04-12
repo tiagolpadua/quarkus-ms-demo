@@ -14,6 +14,10 @@ receivers:
           static_configs:
             - targets: ['localhost:8888']
 
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
 processors:
   # Batch processing for better performance
   batch:
@@ -34,29 +38,29 @@ processors:
         action: insert
 
 exporters:
-  # Export to Jaeger via gRPC
-  jaeger:
-    endpoint: jaeger:14250
+  # Export traces to Jaeger via OTLP/gRPC
+  otlp:
+    endpoint: jaeger:4317
     tls:
       insecure: true
 
   # Optional: Prometheus exporter for metrics
   prometheus:
-    endpoint: "0.0.0.0:8888"
+    endpoint: "0.0.0.0:8889"
     namespace: otel
     const_labels:
       environment: local
 
-  # Logging exporter for debugging
-  logging:
-    loglevel: debug
+  # Debug exporter for local troubleshooting
+  debug: {}
 
 service:
+  extensions: [health_check]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch, attributes]
-      exporters: [jaeger, logging]
+      exporters: [otlp, debug]
 
     metrics:
       receivers: [otlp, prometheus]

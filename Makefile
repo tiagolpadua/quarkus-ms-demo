@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev check fmt build docker
+.PHONY: help dev check fmt build docker compose
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -20,3 +20,6 @@ build: ## Build production artefacts with clean verify
 
 docker: ## Build JVM Docker image and run the container
 	./run-docker.sh
+
+compose: ## Build production artefacts and start docker compose
+	./run-compose.sh

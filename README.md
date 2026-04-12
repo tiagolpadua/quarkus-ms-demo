@@ -249,7 +249,7 @@ docker compose up
 | `http://localhost:8080/q/health` | Health |
 | `http://localhost:8080/q/metrics` | Metrics |
 | `http://localhost:16686` | Jaeger UI |
-| `http://localhost:8888/healthz` | OTEL Collector health |
+| `http://localhost:13133` | OTEL Collector health |
 
 > [!TIP]
 > If your environment does not support `docker compose`, try `docker-compose`.

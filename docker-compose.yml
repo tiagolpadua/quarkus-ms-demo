@@ -7,7 +7,9 @@ services:
       - "4317:4317"   # OTLP gRPC receiver
       - "4318:4318"   # OTLP HTTP receiver
       - "9411:9411"   # Zipkin receiver
-      - "8888:8888"   # Prometheus metrics port
+      - "8888:8888"   # Collector internal metrics port
+      - "8889:8889"   # Exported Prometheus metrics port
+      - "13133:13133" # OTEL Collector health check
     volumes:
       - ./otelcol-config.yaml:/etc/otelcol-config.yaml
     command:
@@ -18,12 +20,6 @@ services:
       - jaeger
     networks:
       - quarkus-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8888/healthz" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   # Jaeger - distributed tracing backend
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -38,7 +34,7 @@ services:
     networks:
       - quarkus-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:16686/api/health" ]
+      test: [ "CMD-SHELL", "wget --spider -q http://localhost:16686/ || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -57,22 +53,20 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_RESOURCE_ATTRIBUTES=service.name=quarkus-ms-demo,service.version=1.0.0
-      - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_METRICS_EXPORTER=otlp
-      - OTEL_LOGS_EXPORTER=otlp
+      - DEPLOYMENT_ENVIRONMENT=docker-compose
       # Quarkus Configuration
       - QUARKUS_LOG_LEVEL=INFO
       - QUARKUS_HTTP_HOST=0.0.0.0
       - QUARKUS_HTTP_PORT=8080
     depends_on:
       otel-collector:
-        condition: service_healthy
+        condition: service_started
       jaeger:
-        condition: service_healthy
+        condition: service_started
     networks:
       - quarkus-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health" ]
+      test: [ "CMD-SHELL", "wget --spider -q http://localhost:8080/q/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
